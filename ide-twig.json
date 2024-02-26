@@ -1,0 +1,8 @@
+{
+  "namespaces": [
+    {
+      "namespace": "products-stocks-telegram",
+      "path": "Resources/view"
+    }
+  ]
+}

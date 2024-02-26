@@ -1,0 +1,41 @@
+{
+  "name": "baks-dev/products-stocks-telegram",
+  "description": "Модуль управления складским учетом продукции с помощью Telegram",
+  "homepage": "https://github.com/baks-dev/products-stocks-telegram",
+  "keywords": [
+    "symfony",
+    "bundle",
+    "library",
+    "module",
+    "plugin",
+    "product",
+    "stocks",
+    "telegram",
+    "baksdev"
+  ],
+  "license": "MIT",
+  "type": "symfony-bundle",
+  "authors": [
+    {
+      "name": "Baks Development",
+      "email": "admin@baks.dev"
+    }
+  ],
+  "require": {
+    "php": ">=8.2"
+  },
+  "require-dev": {
+    "roave/security-advisories": "dev-latest"
+  },
+  "autoload": {
+    "psr-4": {
+      "BaksDev\\Products\\Stocks\\Telegram\\": ""
+    }
+  },
+  "config": {
+    "sort-packages": true,
+    "allow-plugins": {
+      "symfony/flex": true
+    }
+  }
+}
