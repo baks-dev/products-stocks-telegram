@@ -1,6 +1,6 @@
 <?php
 /*
- *  Copyright 2023.  Baks.dev <admin@baks.dev>
+ *  Copyright 2024.  Baks.dev <admin@baks.dev>
  *
  *  Permission is hereby granted, free of charge, to any person obtaining a copy
  *  of this software and associated documentation files (the "Software"), to deal
@@ -21,31 +21,26 @@
  *  THE SOFTWARE.
  */
 
-namespace Symfony\Component\DependencyInjection\Loader\Configurator;
+namespace BaksDev\Products\Stocks\Telegram\Repository\ProductStockFixed;
 
-use Symfony\Config\FrameworkConfig;
+use BaksDev\Products\Stocks\Type\Event\ProductStockEventUid;
+use BaksDev\Users\Profile\UserProfile\Type\Id\UserProfileUid;
 
-return static function (FrameworkConfig $framework) {
+interface ProductStockFixedInterface
+{
+    /**
+     * Фиксирует заявку за сотрудником
+     */
+    public function fixed(ProductStockEventUid|string $event, UserProfileUid|string $profile): int|string;
 
-    $messenger = $framework->messenger();
+    /**
+     * Снимает фиксацию с заявки
+     */
+    public function cancel(ProductStockEventUid|string $event, UserProfileUid|string $profile): int|string;
 
-    $messenger
-        ->transport('products-stocks-telegram')
-        ->dsn('%env(MESSENGER_TRANSPORT_DSN)%')
-        ->options(['queue_name' => 'products-stocks-telegram'])
-        ->failureTransport('failed-products-stocks-telegram')
-        ->retryStrategy()
-        ->maxRetries(3)
-        ->delay(1000)
-        ->maxDelay(0)
-        ->multiplier(3) // увеличиваем задержку перед каждой повторной попыткой
-        ->service(null)
+    /**
+     * Возвращает пользователя, зафиксировавший заявку
+     */
+    public function findUserProfile(ProductStockEventUid|string $event): array|false;
 
-    ;
-
-    $messenger->transport('failed-products-stocks-telegram')
-        ->dsn('%env(MESSENGER_TRANSPORT_DSN)%')
-        ->options(['queue_name' => 'failed-products-stocks-telegram'])
-    ;
-
-};
+}
