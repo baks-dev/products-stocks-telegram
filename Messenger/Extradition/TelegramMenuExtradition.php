@@ -57,7 +57,7 @@ final class TelegramMenuExtradition
 
         if($TelegramRequest instanceof TelegramRequestMessage)
         {
-            if($TelegramRequest->getText() !== '/menu')
+            if($TelegramRequest->getText() !== '/start')
             {
                 return;
             }
@@ -65,7 +65,7 @@ final class TelegramMenuExtradition
 
         if($TelegramRequest instanceof TelegramRequestCallback)
         {
-            if($TelegramRequest->getCall() !== 'menu')
+            if($TelegramRequest->getCall() !== 'start')
             {
                 return;
             }
@@ -77,6 +77,7 @@ final class TelegramMenuExtradition
         }
 
         $this->handle($TelegramRequest);
+        $message->complete();
 
     }
 

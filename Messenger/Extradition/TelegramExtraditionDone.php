@@ -117,6 +117,7 @@ final class TelegramExtraditionDone
             ->chanel($TelegramRequest->getChatId());
 
         $this->handle($TelegramRequest);
+        $message->complete();
     }
 
     /**

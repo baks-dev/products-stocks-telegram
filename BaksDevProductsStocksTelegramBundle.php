@@ -38,7 +38,6 @@ class BaksDevProductsStocksTelegramBundle extends AbstractBundle
 
         foreach(new DirectoryIterator($path) as $config)
         {
-
             if($config->isDot() || $config->isDir())
             {
                 continue;

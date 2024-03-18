@@ -84,6 +84,7 @@ final class TelegramProfileExtradition
         }
 
         $this->handle($TelegramRequest);
+        $message->complete();
 
     }
 

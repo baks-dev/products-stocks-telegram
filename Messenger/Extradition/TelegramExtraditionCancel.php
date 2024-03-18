@@ -100,6 +100,7 @@ final class TelegramExtraditionCancel
         }
 
         $this->handle($TelegramRequest);
+        $message->complete();
     }
 
     /**
