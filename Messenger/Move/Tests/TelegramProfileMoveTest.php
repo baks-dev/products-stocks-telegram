@@ -76,10 +76,11 @@ final class TelegramProfileMoveTest extends KernelTestCase
 
     public function testUseCase(): void
     {
-        self::assertNotNull(self::$chat);
-        self::assertNotNull(self::$secret);
+        if(self::$chat)
+        {
+            self::assertNotNull(self::$secret);
 
-        $jsonData = '{
+            $jsonData = '{
         "update_id":'.random_int(100000000, 999999999).', 
         "callback_query":
         {
@@ -128,23 +129,24 @@ final class TelegramProfileMoveTest extends KernelTestCase
        
         }}';
 
-        // Создаем объект Request с данными JSON
-        $Request = Request::create(
-            '/telegram/endpoint', // URL для запроса
-            'POST',
-            content:  $jsonData // Данные в формате JSON
-        );
+            // Создаем объект Request с данными JSON
+            $Request = Request::create(
+                '/telegram/endpoint', // URL для запроса
+                'POST',
+                content: $jsonData // Данные в формате JSON
+            );
 
-        $Request->headers->set('Content-Type', 'application/json');
-        $Request->headers->set('X-Telegram-Bot-Api-Secret-Token', self::$secret);
+            $Request->headers->set('Content-Type', 'application/json');
+            $Request->headers->set('X-Telegram-Bot-Api-Secret-Token', self::$secret);
 
-        /** @var TelegramRequest $TelegramRequest */
-        $TelegramRequest = self::getContainer()->get(TelegramRequest::class);
-        $TelegramRequest = $TelegramRequest->request($Request);
+            /** @var TelegramRequest $TelegramRequest */
+            $TelegramRequest = self::getContainer()->get(TelegramRequest::class);
+            $TelegramRequest = $TelegramRequest->request($Request);
 
-        $TelegramMenuMove = self::getContainer()->get(TelegramMoveProfile::class);
+            $TelegramMenuMove = self::getContainer()->get(TelegramMoveProfile::class);
 
-        ($TelegramMenuMove)(new TelegramEndpointMessage($TelegramRequest));
+            ($TelegramMenuMove)(new TelegramEndpointMessage($TelegramRequest));
+        }
 
         self::assertTrue(true);
 

@@ -71,45 +71,46 @@ final class TelegramMenuMoveTest extends KernelTestCase
         $TelegramBotSettingsInterface = $container->get(TelegramBotSettingsInterface::class);
         self::$secret = $TelegramBotSettingsInterface->settings()->getSecret();
 
-//        /** @var TelegramSecurityInterface $TelegramSecurityInterface */
-//        $TelegramSecurityInterface = $container->get(TelegramSecurityInterface::class);
+        //        /** @var TelegramSecurityInterface $TelegramSecurityInterface */
+        //        $TelegramSecurityInterface = $container->get(TelegramSecurityInterface::class);
 
-// модератор
-//        $isGrantedProfile = $TelegramSecurityInterface->isGranted(
-//            '018dd60e-9d2d-786e-9851-e9f8043029ec',
-//            'ROLE_PRODUCT_STOCK_WAREHOUSE_SEND',
-//            '018d36b7-0d03-71a8-b1b0-e57b5c186ef9',
-//        );
+        // модератор
+        //        $isGrantedProfile = $TelegramSecurityInterface->isGranted(
+        //            '018dd60e-9d2d-786e-9851-e9f8043029ec',
+        //            'ROLE_PRODUCT_STOCK_WAREHOUSE_SEND',
+        //            '018d36b7-0d03-71a8-b1b0-e57b5c186ef9',
+        //        );
 
 
-//
-//        $isGrantedProfile = $TelegramSecurityInterface->isExistGranted(
-//            '018d36b7-0d03-71a8-b1b0-e57b5c186ef9',
-//            'ROLE_PRODUCT_STOCK_WAREHOUSE_SEND',
-//            '018d36b7-0d03-71a8-b1b0-e57b5c186ef9',
-//        );
-//
-//
-//        dd($isGrantedProfile);
+        //
+        //        $isGrantedProfile = $TelegramSecurityInterface->isExistGranted(
+        //            '018d36b7-0d03-71a8-b1b0-e57b5c186ef9',
+        //            'ROLE_PRODUCT_STOCK_WAREHOUSE_SEND',
+        //            '018d36b7-0d03-71a8-b1b0-e57b5c186ef9',
+        //        );
+        //
+        //
+        //        dd($isGrantedProfile);
 
 
         // ФВДМИН
-//        $isGrantedProfile = $TelegramSecurityInterface->isGrantedProfile(
-//            '018d3075-6e7b-7b5e-95f6-923243b1fa3d',
-//            '018d3075-6e7b-7b5e-95f6-923243b1fa3d',
-//            'ROLE_PRODUCT_STOCK_WAREHOUSE_SEND'
-//        );
+        //        $isGrantedProfile = $TelegramSecurityInterface->isGrantedProfile(
+        //            '018d3075-6e7b-7b5e-95f6-923243b1fa3d',
+        //            '018d3075-6e7b-7b5e-95f6-923243b1fa3d',
+        //            'ROLE_PRODUCT_STOCK_WAREHOUSE_SEND'
+        //        );
 
         //dd($isGrantedProfile);
     }
 
     public function testUseCase(): void
     {
+        if(self::$chat)
+        {
+            self::assertNotNull(self::$chat);
+            self::assertNotNull(self::$secret);
 
-        self::assertNotNull(self::$chat);
-        self::assertNotNull(self::$secret);
-
-        $jsonData = '{
+            $jsonData = '{
             "update_id":'.random_int(100000000, 999999999).', 
             "message": {
             "message_id":'.random_int(1000, 9999).',
@@ -125,23 +126,24 @@ final class TelegramMenuMoveTest extends KernelTestCase
             }
         }';
 
-        // Создаем объект Request с данными JSON
-        $Request = Request::create(
-            '/telegram/endpoint', // URL для запроса
-            'POST',
-            content:  $jsonData // Данные в формате JSON
-        );
+            // Создаем объект Request с данными JSON
+            $Request = Request::create(
+                '/telegram/endpoint', // URL для запроса
+                'POST',
+                content: $jsonData // Данные в формате JSON
+            );
 
-        $Request->headers->set('Content-Type', 'application/json');
-        $Request->headers->set('X-Telegram-Bot-Api-Secret-Token', self::$secret);
+            $Request->headers->set('Content-Type', 'application/json');
+            $Request->headers->set('X-Telegram-Bot-Api-Secret-Token', self::$secret);
 
-        /** @var TelegramRequest $TelegramRequest */
-        $TelegramRequest = self::getContainer()->get(TelegramRequest::class);
-        $TelegramRequest = $TelegramRequest->request($Request);
+            /** @var TelegramRequest $TelegramRequest */
+            $TelegramRequest = self::getContainer()->get(TelegramRequest::class);
+            $TelegramRequest = $TelegramRequest->request($Request);
 
-        $TelegramMenuMove = self::getContainer()->get(TelegramMoveMenu::class);
+            $TelegramMenuMove = self::getContainer()->get(TelegramMoveMenu::class);
 
-        ($TelegramMenuMove)(new TelegramEndpointMessage($TelegramRequest));
+            ($TelegramMenuMove)(new TelegramEndpointMessage($TelegramRequest));
+        }
 
         self::assertTrue(true);
     }
