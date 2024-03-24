@@ -28,6 +28,7 @@ namespace BaksDev\Products\Stocks\Telegram\Messenger\Extradition;
 use BaksDev\Auth\Email\Repository\AccountEventActiveByEmail\AccountEventActiveByEmailInterface;
 use BaksDev\Auth\Email\Type\Email\AccountEmail;
 use BaksDev\Auth\Telegram\Repository\AccountTelegramEvent\AccountTelegramEventInterface;
+use BaksDev\Auth\Telegram\Repository\ActiveProfileByAccountTelegram\ActiveProfileByAccountTelegramInterface;
 use BaksDev\Auth\Telegram\Type\Status\AccountTelegramStatus\Collection\AccountTelegramStatusCollection;
 use BaksDev\Auth\Telegram\UseCase\Admin\NewEdit\AccountTelegramDTO;
 use BaksDev\Auth\Telegram\UseCase\Admin\NewEdit\AccountTelegramHandler;
@@ -39,11 +40,14 @@ use BaksDev\Products\Stocks\Entity\ProductStock;
 use BaksDev\Products\Stocks\Telegram\Repository\ProductStockFixed\ProductStockFixedInterface;
 use BaksDev\Products\Stocks\Type\Event\ProductStockEventUid;
 use BaksDev\Products\Stocks\Type\Id\ProductStockUid;
+use BaksDev\Products\Stocks\Type\Status\ProductStockStatus;
+use BaksDev\Products\Stocks\Type\Status\ProductStockStatus\ProductStockStatusPackage;
 use BaksDev\Products\Stocks\UseCase\Admin\Extradition\ExtraditionProductStockDTO;
 use BaksDev\Products\Stocks\UseCase\Admin\Extradition\ExtraditionProductStockHandler;
 use BaksDev\Telegram\Api\TelegramDeleteMessage;
 use BaksDev\Telegram\Api\TelegramSendMessage;
 use BaksDev\Telegram\Bot\Messenger\TelegramEndpointMessage\TelegramEndpointMessage;
+use BaksDev\Telegram\Bot\Repository\SecurityProfileIsGranted\TelegramSecurityInterface;
 use BaksDev\Telegram\Request\TelegramRequest;
 use BaksDev\Telegram\Request\Type\TelegramRequestCallback;
 use BaksDev\Telegram\Request\Type\TelegramRequestIdentifier;
@@ -60,31 +64,39 @@ use Symfony\Bundle\SecurityBundle\Security;
 #[AsMessageHandler]
 final class TelegramExtraditionDone
 {
-    public const KEY = 'XZabntnqK';
+    public const KEY = 'mjeFFbvjSk';
 
-    private $security;
+    private ?UserProfileUid $profile;
+
     private TelegramSendMessage $telegramSendMessage;
     private ProductStockFixedInterface $productStockFixed;
     private TelegramExtraditionProcess $extraditionProcess;
     private ORMQueryBuilder $ORMQueryBuilder;
     private ExtraditionProductStockHandler $extraditionProductStockHandler;
     private LoggerInterface $logger;
+    private ActiveProfileByAccountTelegramInterface $activeProfileByAccountTelegram;
+    private TelegramSecurityInterface $TelegramSecurity;
+
 
     public function __construct(
         ORMQueryBuilder $ORMQueryBuilder,
-        Security $security,
         TelegramSendMessage $telegramSendMessage,
         TelegramExtraditionProcess $extraditionProcess,
         ExtraditionProductStockHandler $extraditionProductStockHandler,
-        LoggerInterface $productsStocksTelegramLogger
+        LoggerInterface $productsStocksTelegramLogger,
+        ActiveProfileByAccountTelegramInterface $activeProfileByAccountTelegram,
+        TelegramSecurityInterface $TelegramSecurity,
+        ProductStockFixedInterface $productStockFixed
     )
     {
-        $this->security = $security;
         $this->telegramSendMessage = $telegramSendMessage;
         $this->extraditionProcess = $extraditionProcess;
         $this->ORMQueryBuilder = $ORMQueryBuilder;
         $this->extraditionProductStockHandler = $extraditionProductStockHandler;
         $this->logger = $productsStocksTelegramLogger;
+        $this->activeProfileByAccountTelegram = $activeProfileByAccountTelegram;
+        $this->TelegramSecurity = $TelegramSecurity;
+        $this->productStockFixed = $productStockFixed;
     }
 
     public function __invoke(TelegramEndpointMessage $message): void
@@ -107,14 +119,12 @@ final class TelegramExtraditionDone
             return;
         }
 
-        if(false === $this->security->isGranted('ROLE_USER'))
+        $this->profile = $this->activeProfileByAccountTelegram->findByChat($TelegramRequest->getChatId());
+
+        if($this->profile === null)
         {
             return;
         }
-
-        $this
-            ->telegramSendMessage
-            ->chanel($TelegramRequest->getChatId());
 
         $this->handle($TelegramRequest);
         $message->complete();
@@ -125,27 +135,53 @@ final class TelegramExtraditionDone
      */
     public function handle(TelegramRequestCallback $TelegramRequest): void
     {
-
         /**
          * Получаем событие
          */
-
         $ProductStockEventUid = new ProductStockEventUid($TelegramRequest->getIdentifier());
-
-        $orm = $this->ORMQueryBuilder->createQueryBuilder(self::class);
-
-        /** @var ProductStockEvent $ProductStockEvent */
-        $ProductStockEvent = $orm
-            ->from(ProductStockEvent::class, 'event')
-            ->where('event.id = :event')
-            ->setParameter('event', $ProductStockEventUid, ProductStockUid::TYPE)
-            ->getOneOrNullResult()
-        ;
+        $ProductStockEvent = $this->getProductStockEvent($ProductStockEventUid);
 
         if(!$ProductStockEvent)
         {
             return;
         }
+
+        if(!$this->TelegramSecurity->isGranted($this->profile, 'ROLE_PRODUCT_STOCK_PACKAGE', $ProductStockEvent->getProfile()))
+        {
+
+            $menu[] = [
+                'text' => '❌',
+                'callback_data' => 'telegram-delete-message'
+            ];
+
+            $menu[] = [
+                'text' => 'Меню',
+                'callback_data' => 'start'
+            ];
+
+            $markup = json_encode([
+                'inline_keyboard' => array_chunk($menu, 2),
+            ], JSON_THROW_ON_ERROR);
+
+
+            $msg = '⛔️ Недостаточно прав для упаковки заказа';
+
+            $this
+                ->telegramSendMessage
+                ->chanel($TelegramRequest->getChatId())
+                ->delete([$TelegramRequest->getId()])
+                ->message($msg)
+                ->markup($markup)
+                ->send();
+
+            /** Снимаем фиксацию с заявки */
+
+            $this->productStockFixed->cancel($ProductStockEventUid, $this->profile);
+
+            return;
+        }
+
+
 
         /**
          * Делаем отметку о комплектации
@@ -161,6 +197,7 @@ final class TelegramExtraditionDone
 
             $this
                 ->telegramSendMessage
+                ->chanel($TelegramRequest->getChatId())
                 ->delete([$TelegramRequest->getId()])
                 ->message($msg)
                 ->send();
@@ -180,6 +217,7 @@ final class TelegramExtraditionDone
 
         $this
             ->telegramSendMessage
+            ->chanel($TelegramRequest->getChatId())
             ->delete([$TelegramRequest->getId()])
             ->message($msg)
             ->send();
@@ -193,15 +231,36 @@ final class TelegramExtraditionDone
         $TelegramRequest->setIdentifier((string) $profile);
         $this->extraditionProcess->handle($TelegramRequest);
 
-
-        $User = $this->security->getToken()?->getUser();
-
         $this->logger->debug('Пользователь укомплектовал заказ', [
             'number' => $ProductStockEvent->getNumber(),
             'ProductStockEventUid' => $ProductStockEvent->getId(),
-            'Current UserProfileUid' => $User?->getProfile()
+            'Current UserProfileUid' => $this->profile
         ]);
+    }
 
+
+    private function getProductStockEvent(ProductStockEventUid $event): ?ProductStockEvent
+    {
+        $ProductStockEventUid = new ProductStockEventUid($event);
+
+        $orm = $this->ORMQueryBuilder->createQueryBuilder(self::class);
+
+        /** @var ProductStockEvent $ProductStockEvent */
+        $orm
+            ->select('event')
+            ->from(ProductStockEvent::class, 'event')
+            ->where('event.id = :event')
+            ->setParameter('event', $ProductStockEventUid, ProductStockEventUid::TYPE)
+            ->andWhere('event.status = :status')
+            ->setParameter('status', new ProductStockStatus(ProductStockStatusPackage::class), ProductStockStatus::TYPE)
+            ->join(
+                ProductStock::class,
+                'stock',
+                'WITH',
+                'stock.event = event.id'
+            );
+
+        return $orm->getOneOrNullResult();
     }
 
 }

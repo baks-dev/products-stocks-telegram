@@ -67,7 +67,6 @@ final class ProductStockNextExtraditionRepository implements ProductStockNextExt
 
     private ?ProductStockEventUid $event = null;
 
-
     private UserProfileUid $profile;
 
     public function __construct(
@@ -172,6 +171,9 @@ final class ProductStockNextExtraditionRepository implements ProductStockNextExt
             'order_user.event = orders.event'
         );
 
+
+
+
         $dbal->leftJoin(
             'order_user',
             OrderDelivery::TABLE,
@@ -185,6 +187,7 @@ final class ProductStockNextExtraditionRepository implements ProductStockNextExt
             'delivery_event',
             'delivery_event.id = order_delivery.event AND delivery_event.main = order_delivery.delivery'
         );
+
 
         $dbal
             ->addSelect('delivery_trans.name AS delivery_name')

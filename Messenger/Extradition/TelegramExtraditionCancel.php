@@ -120,23 +120,25 @@ final class TelegramExtraditionCancel
         /** Отправляем сообщение пользователю для выбора действий */
 
         $menu[] = [
-            'text' => 'Продолжить упаковку заказов',
-            'callback_data' => TelegramProfileExtradition::KEY
+            'text' => '❌', // Удалить сообщение
+            'callback_data' => 'telegram-delete-message'
         ];
 
         $menu[] = [
-            'text' => 'Главное меню',
-            'callback_data' => 'menu'
+            'text' => 'Меню',
+            'callback_data' => 'start'
+        ];
+
+        $menu[] = [
+            'text' => '📦 Продолжить упаковку',
+            'callback_data' => TelegramExtraditionProfile::KEY
         ];
 
         $markup = json_encode([
-            'inline_keyboard' => array_chunk($menu, 1),
+            'inline_keyboard' => array_chunk($menu, 2),
         ]);
 
-
-        $msg = 'Процесс сборки остановлен';
-        $msg .= PHP_EOL;
-        $msg .= 'ProductStockEventUid '.$TelegramRequest->getIdentifier();
+        $msg = '🛑 Процесс сборки <b>заказов</b> остановлен';
 
         $this
             ->telegramSendMessage
@@ -145,6 +147,7 @@ final class TelegramExtraditionCancel
             ->message($msg)
             ->markup($markup)
             ->send();
+
 
 
         $this->logger->debug('Пользователь остановил сборку заказов', [

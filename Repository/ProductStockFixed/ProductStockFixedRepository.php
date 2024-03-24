@@ -134,5 +134,4 @@ final class ProductStockFixedRepository implements ProductStockFixedInterface
         return $dbal->enableCache('products-stocks-telegram', 60)->fetchAssociative();
 
     }
-
 }

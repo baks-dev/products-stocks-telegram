@@ -41,6 +41,4 @@ return static function (ContainerConfigurator $configurator): void {
             $MODULE.'**/*DTO.php',
         ])
     ;
-
-    dd(4645);
 };
