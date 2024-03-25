@@ -23,7 +23,7 @@
 
 declare(strict_types=1);
 
-namespace BaksDev\Products\Stocks\Telegram\Messenger\Move;
+namespace BaksDev\Products\Stocks\Telegram\Messenger\Notifier;
 
 use BaksDev\Auth\Email\Repository\AccountEventActiveByEmail\AccountEventActiveByEmailInterface;
 use BaksDev\Auth\Email\Type\Email\AccountEmail;
@@ -43,6 +43,7 @@ use BaksDev\Products\Stocks\Messenger\ProductStockMessage;
 use BaksDev\Products\Stocks\Messenger\Stocks\AddProductStocksTotal\AddProductStocksReserveMessage;
 use BaksDev\Products\Stocks\Repository\CurrentProductStocks\CurrentProductStocksInterface;
 use BaksDev\Products\Stocks\Repository\ProductStocksById\ProductStocksByIdInterface;
+use BaksDev\Products\Stocks\Telegram\Messenger\Move\TelegramMoveProcess;
 use BaksDev\Products\Stocks\Telegram\Repository\ProductStockFixed\ProductStockFixedInterface;
 use BaksDev\Products\Stocks\Type\Event\ProductStockEventUid;
 use BaksDev\Products\Stocks\Type\Status\ProductStockStatus\Collection\ProductStockStatusCollection;
@@ -72,6 +73,7 @@ final class TelegramMoveNew
     private CurrentProductStocksInterface $currentProductStocks;
     private AccountTelegramRoleInterface $accountTelegramRole;
     private TelegramSendMessage $telegramSendMessage;
+    private LoggerInterface $logger;
 
     public function __construct(
         EntityManagerInterface $entityManager,
@@ -79,6 +81,7 @@ final class TelegramMoveNew
         CurrentProductStocksInterface $currentProductStocks,
         AccountTelegramRoleInterface $accountTelegramRole,
         TelegramSendMessage $telegramSendMessage,
+        LoggerInterface $productsStocksTelegramLogger,
     )
     {
         $ProductStockStatusCollection->cases();
@@ -86,7 +89,7 @@ final class TelegramMoveNew
         $this->accountTelegramRole = $accountTelegramRole;
         $this->telegramSendMessage = $telegramSendMessage;
         $this->currentProductStocks = $currentProductStocks;
-
+        $this->logger = $productsStocksTelegramLogger;
     }
 
     /**
@@ -108,6 +111,8 @@ final class TelegramMoveNew
         {
             return;
         }
+
+        $this->logger->info(sprintf('Профиль перемещения %s', $ProductStockEvent->getProfile()));
 
         /** Получаем всех Telegram пользователей, имеющих доступ к профилю заявки */
         $accounts = $this->accountTelegramRole->fetchAll($ProductStockEvent->getProfile(), 'ROLE_PRODUCT_STOCK_WAREHOUSE_SEND');
@@ -136,6 +141,8 @@ final class TelegramMoveNew
 
         foreach($accounts as $account)
         {
+            $this->logger->info(sprintf('Отправили уведомление о заявке на перемещение пользователю %s', $account['chat']));
+
             $this
                 ->telegramSendMessage
                 ->chanel($account['chat'])
