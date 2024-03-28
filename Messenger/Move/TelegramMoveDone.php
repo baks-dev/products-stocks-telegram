@@ -159,7 +159,7 @@ final class TelegramMoveDone
 
             $menu[] = [
                 'text' => 'Меню',
-                'callback_data' => 'start'
+                'callback_data' => 'menu'
             ];
 
             $markup = json_encode([

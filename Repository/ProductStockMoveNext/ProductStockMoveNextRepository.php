@@ -23,7 +23,7 @@
 
 declare(strict_types=1);
 
-namespace BaksDev\Products\Stocks\Telegram\Repository\ProductStockNextMove;
+namespace BaksDev\Products\Stocks\Telegram\Repository\ProductStockMoveNext;
 
 use BaksDev\Core\Doctrine\DBALQueryBuilder;
 use BaksDev\Delivery\Entity\Event\DeliveryEvent;
@@ -58,7 +58,7 @@ use BaksDev\Users\Profile\UserProfile\Entity\Personal\UserProfilePersonal;
 use BaksDev\Users\Profile\UserProfile\Entity\UserProfile;
 use BaksDev\Users\Profile\UserProfile\Type\Id\UserProfileUid;
 
-final class ProductStockNextMoveRepository implements ProductStockNextMoveInterface
+final class ProductStockMoveNextRepository implements ProductStockMoveNextInterface
 {
     private DBALQueryBuilder $DBALQueryBuilder;
 

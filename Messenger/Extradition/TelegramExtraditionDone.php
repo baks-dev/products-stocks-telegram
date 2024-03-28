@@ -156,7 +156,7 @@ final class TelegramExtraditionDone
 
             $menu[] = [
                 'text' => 'Меню',
-                'callback_data' => 'start'
+                'callback_data' => 'menu'
             ];
 
             $markup = json_encode([

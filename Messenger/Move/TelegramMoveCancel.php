@@ -112,6 +112,7 @@ final class TelegramMoveCancel
      */
     public function handle(TelegramRequestCallback $TelegramRequest): void
     {
+
 //        /** Отмена фиксации заявки */
 //        ///** @var UserProfileUid $currentUserProfileUid */
 //        //$currentUserProfileUid = $this->security->getUser()?->getProfile();
@@ -130,7 +131,7 @@ final class TelegramMoveCancel
 
         $menu[] = [
             'text' => 'Меню',
-            'callback_data' => 'start'
+            'callback_data' => 'menu'
         ];
 
         $menu[] = [

@@ -121,7 +121,7 @@ final class TelegramMenuMoveTest extends KernelTestCase
             "chat":{ "id":'.self::$chat.',
             "first_name":"First Name","type":"private"},
             "date":'.time().',
-            "text":"/start",
+            "text":"/menu",
             "entities":[{"offset":0,"length":6,"type":"bot_command"}]
             }
         }';

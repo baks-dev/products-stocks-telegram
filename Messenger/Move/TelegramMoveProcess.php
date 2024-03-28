@@ -27,7 +27,7 @@ namespace BaksDev\Products\Stocks\Telegram\Messenger\Move;
 
 use BaksDev\Auth\Telegram\Repository\ActiveProfileByAccountTelegram\ActiveProfileByAccountTelegramInterface;
 use BaksDev\Products\Stocks\Telegram\Repository\ProductStockFixed\ProductStockFixedInterface;
-use BaksDev\Products\Stocks\Telegram\Repository\ProductStockNextMove\ProductStockNextMoveInterface;
+use BaksDev\Products\Stocks\Telegram\Repository\ProductStockMoveNext\ProductStockMoveNextInterface;
 use BaksDev\Products\Stocks\Type\Event\ProductStockEventUid;
 use BaksDev\Telegram\Api\TelegramSendMessage;
 use BaksDev\Telegram\Bot\Messenger\TelegramEndpointMessage\TelegramEndpointMessage;
@@ -44,21 +44,21 @@ final class TelegramMoveProcess
 
     private TelegramSendMessage $telegramSendMessage;
     private ProductStockFixedInterface $productStockFixed;
-    private ProductStockNextMoveInterface $productStockNextMove;
+    private ProductStockMoveNextInterface $ProductStockMoveNext;
     private LoggerInterface $logger;
     private ActiveProfileByAccountTelegramInterface $activeProfileByAccountTelegram;
 
     public function __construct(
         TelegramSendMessage $telegramSendMessage,
         ProductStockFixedInterface $productStockFixed,
-        ProductStockNextMoveInterface $productStockNextMove,
+        ProductStockMoveNextInterface $ProductStockMoveNext,
         LoggerInterface $productsStocksTelegramLogger,
         ActiveProfileByAccountTelegramInterface $activeProfileByAccountTelegram
     )
     {
         $this->telegramSendMessage = $telegramSendMessage;
         $this->productStockFixed = $productStockFixed;
-        $this->productStockNextMove = $productStockNextMove;
+        $this->ProductStockMoveNext = $ProductStockMoveNext;
         $this->logger = $productsStocksTelegramLogger;
         $this->activeProfileByAccountTelegram = $activeProfileByAccountTelegram;
     }
@@ -102,12 +102,12 @@ final class TelegramMoveProcess
         /** Получаем заявку на перемещение профиля */
         $UserProfileUid = $TelegramRequest->getIdentifier();
 
-        $ProductStockNextMove = $this->productStockNextMove
+        $ProductStockMoveNext = $this->ProductStockMoveNext
             ->findByProfile($UserProfileUid, $CurrentUserProfileUid);
 
 
         /** Если заявок больше нет - выводим кнопку главного меню */
-        if(!$ProductStockNextMove)
+        if(!$ProductStockMoveNext)
         {
 
             $menu[] = [
@@ -117,7 +117,7 @@ final class TelegramMoveProcess
 
             $menu[] = [
                 'text' => 'Меню',
-                'callback_data' => 'start'
+                'callback_data' => 'menu'
             ];
 
             $markup = json_encode([
@@ -139,12 +139,12 @@ final class TelegramMoveProcess
         }
 
         /** Фиксируем полученную заявку за сотрудником */
-        $ProductStockEventUid = new ProductStockEventUid($ProductStockNextMove['stock_event']);
+        $ProductStockEventUid = new ProductStockEventUid($ProductStockMoveNext['stock_event']);
         $this->productStockFixed->fixed($ProductStockEventUid, $CurrentUserProfileUid);
 
         $this->logger->debug('Зафиксировали заявку за профилем пользователя',
             [
-                'number' => $ProductStockNextMove['stock_number'],
+                'number' => $ProductStockMoveNext['stock_number'],
                 'ProductStockEventUid' => $ProductStockEventUid,
                 'CurrentUserProfileUid' => $CurrentUserProfileUid
             ]);
@@ -156,9 +156,9 @@ final class TelegramMoveProcess
 
         $msg .= PHP_EOL;
 
-        $msg .= sprintf('Номер: <b>%s</b>', $ProductStockNextMove['stock_number']).PHP_EOL;
-        $msg .= sprintf('Склад отгрузки: <b>%s</b>', $ProductStockNextMove['users_profile_username']).PHP_EOL;
-        $msg .= sprintf('Склад назначения: <b>%s</b>', $ProductStockNextMove['users_profile_destination']).PHP_EOL;
+        $msg .= sprintf('Номер: <b>%s</b>', $ProductStockMoveNext['stock_number']).PHP_EOL;
+        $msg .= sprintf('Склад отгрузки: <b>%s</b>', $ProductStockMoveNext['users_profile_username']).PHP_EOL;
+        $msg .= sprintf('Склад назначения: <b>%s</b>', $ProductStockMoveNext['users_profile_destination']).PHP_EOL;
 
 
         /** Получаем продукцию на упаковку */
@@ -166,7 +166,7 @@ final class TelegramMoveProcess
 
         $msg .= '<b>Продукция:</b>'.PHP_EOL;
 
-        $products = $this->productStockNextMove->getAllProducts();
+        $products = $this->ProductStockMoveNext->getAllProducts();
 
         //  $msg .= 'Triangle TR259 235/70 R15 107H | <b>5 шт</b> место 123';
         foreach($products as $product)

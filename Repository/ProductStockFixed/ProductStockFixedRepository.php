@@ -75,7 +75,6 @@ final class ProductStockFixedRepository implements ProductStockFixedInterface
      */
     public function cancel(ProductStockEventUid|string $event, UserProfileUid|string $profile): int|string
     {
-
         $event = is_string($event) ? new ProductStockEventUid($event) : $event;
         $profile = is_string($profile) ? new UserProfileUid($profile) : $profile;
 
@@ -91,9 +90,11 @@ final class ProductStockFixedRepository implements ProductStockFixedInterface
             ->where('id = :event')
             ->setParameter('event', $event, ProductStockEventUid::TYPE);
 
-        $dbal
-            ->andWhere('fixed = :profile')
-            ->setParameter('profile', $profile, UserProfileUid::TYPE);
+
+//
+//        $dbal
+//            ->andWhere('fixed = :profile')
+//            ->setParameter('profile', $profile, UserProfileUid::TYPE);
 
         return $dbal->executeStatement();
     }

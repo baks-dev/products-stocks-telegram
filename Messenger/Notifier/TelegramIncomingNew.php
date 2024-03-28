@@ -112,10 +112,11 @@ final class TelegramIncomingNew
             return;
         }
 
-        /**
-         * Получаем всех Telegram пользователей, имеющих доступ к профилю заявки
-         */
+
+        /** Получаем всех Telegram пользователей, имеющих доступ к профилю заявки */
         $accounts = $this->accountTelegramRole->fetchAll($ProductStockEvent->getProfile(), 'ROLE_PRODUCT_STOCK_INCOMING_ACCEPT');
+
+
 
         if(empty($accounts))
         {

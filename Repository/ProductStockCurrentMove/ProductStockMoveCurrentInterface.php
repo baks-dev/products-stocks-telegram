@@ -21,16 +21,17 @@
  *  THE SOFTWARE.
  */
 
-namespace BaksDev\Products\Stocks\Telegram\Repository\ProductStockNextMove;
+namespace BaksDev\Products\Stocks\Telegram\Repository\ProductStockCurrentMove;
 
+use BaksDev\Products\Stocks\Type\Id\ProductStockUid;
 use BaksDev\Users\Profile\UserProfile\Type\Id\UserProfileUid;
 
-interface ProductStockNextMoveInterface
+interface ProductStockMoveCurrentInterface
 {
     /**
      * Метод возвращает незафиксированную (либо зафиксированную текущего профиля) заявку для упаковки
      */
-    public function findByProfile(UserProfileUid|string $profile, UserProfileUid|string $current): array|bool;
+    public function findByStock(ProductStockUid|string $stock): array|bool;
 
     /**
      * Метод получает всю продукцию в заявке

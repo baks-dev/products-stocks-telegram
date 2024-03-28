@@ -126,7 +126,7 @@ final class TelegramExtraditionCancel
 
         $menu[] = [
             'text' => 'Меню',
-            'callback_data' => 'start'
+            'callback_data' => 'menu'
         ];
 
         $menu[] = [
