@@ -149,13 +149,14 @@ final class TelegramMoveProfile
             ]);
         }
 
+
         $msg = '<b>Выберите профиль пользователя для сборки перемещений:</b>';
         $msg .= PHP_EOL;
 
         $this
             ->telegramSendMessage
             ->chanel($TelegramRequest->getChatId())
-            ->delete([$TelegramRequest->getId()])
+            ->delete([$TelegramRequest->getId(), $TelegramRequest->getLast()])
             ->message($msg)
             ->markup($markup)
             ->send();

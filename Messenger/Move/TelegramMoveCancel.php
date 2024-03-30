@@ -148,7 +148,7 @@ final class TelegramMoveCancel
         $this
             ->telegramSendMessage
             ->chanel($TelegramRequest->getChatId())
-            ->delete([$TelegramRequest->getId()])
+            ->delete([$TelegramRequest->getId(), $TelegramRequest->getLast()])
             ->message($msg)
             ->markup($markup)
             ->send();

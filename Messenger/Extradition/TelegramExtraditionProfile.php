@@ -162,7 +162,7 @@ final class TelegramExtraditionProfile
 
         $this
             ->telegramSendMessage
-            ->delete([$TelegramRequest->getId()])
+            ->delete([$TelegramRequest->getId(), $TelegramRequest->getLast()])
             ->chanel($TelegramRequest->getChatId())
             ->message($msg)
             ->markup($markup)
