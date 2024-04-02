@@ -27,7 +27,7 @@ namespace BaksDev\Products\Stocks\Telegram\Messenger\Extradition;
 
 use BaksDev\Auth\Telegram\Repository\ActiveProfileByAccountTelegram\ActiveProfileByAccountTelegramInterface;
 use BaksDev\Auth\Telegram\Repository\ActiveUserTelegramAccount\ActiveUserTelegramAccountInterface;
-use BaksDev\Menu\Admin\Repository\MenuAuthority\MenuAuthorityRepositoryInterface;
+use BaksDev\Menu\Admin\Repository\MenuAuthority\MenuAuthorityInterface;
 use BaksDev\Products\Stocks\Telegram\Messenger\Move\TelegramMoveProcess;
 use BaksDev\Telegram\Api\TelegramSendMessage;
 use BaksDev\Telegram\Bot\Messenger\TelegramEndpointMessage\TelegramEndpointMessage;
@@ -48,7 +48,7 @@ final class TelegramExtraditionProfile
     private ?UserUid $usr;
 
     private TelegramSendMessage $telegramSendMessage;
-    private MenuAuthorityRepositoryInterface $menuAuthorityRepository;
+    private MenuAuthorityInterface $menuAuthorityRepository;
     private CurrentAllUserProfilesByUserInterface $currentAllUserProfilesByUser;
     private LoggerInterface $logger;
     private TelegramSecurityInterface $TelegramSecurity;
@@ -59,7 +59,7 @@ final class TelegramExtraditionProfile
     public function __construct(
 
         TelegramSendMessage $telegramSendMessage,
-        MenuAuthorityRepositoryInterface $menuAuthorityRepository,
+        MenuAuthorityInterface $menuAuthorityRepository,
         CurrentAllUserProfilesByUserInterface $currentAllUserProfilesByUser,
         LoggerInterface $productsStocksTelegramLogger,
         ActiveUserTelegramAccountInterface $activeUserTelegramAccount,

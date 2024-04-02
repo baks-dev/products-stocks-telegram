@@ -28,7 +28,7 @@ namespace BaksDev\Products\Stocks\Telegram\Messenger\Move;
 use App\Kernel;
 use BaksDev\Auth\Telegram\Repository\ActiveProfileByAccountTelegram\ActiveProfileByAccountTelegramInterface;
 use BaksDev\Auth\Telegram\Repository\ActiveUserTelegramAccount\ActiveUserTelegramAccountInterface;
-use BaksDev\Menu\Admin\Repository\MenuAuthority\MenuAuthorityRepositoryInterface;
+use BaksDev\Menu\Admin\Repository\MenuAuthority\MenuAuthorityInterface;
 use BaksDev\Products\Stocks\Entity\Event\ProductStockEvent;
 use BaksDev\Products\Stocks\Entity\ProductStock;
 use BaksDev\Products\Stocks\Repository\CurrentProductStocks\CurrentProductStocksInterface;
@@ -60,7 +60,7 @@ final class TelegramMoveQrcode
     private ?UserUid $usr = null;
 
     private TelegramSendMessage $telegramSendMessage;
-    private MenuAuthorityRepositoryInterface $menuAuthorityRepository;
+    private MenuAuthorityInterface $menuAuthorityRepository;
     private CurrentAllUserProfilesByUserInterface $currentAllUserProfilesByUser;
     private LoggerInterface $logger;
     private ActiveUserTelegramAccountInterface $activeUserTelegramAccount;
@@ -76,7 +76,7 @@ final class TelegramMoveQrcode
 
     public function __construct(
         TelegramSendMessage $telegramSendMessage,
-        MenuAuthorityRepositoryInterface $menuAuthorityRepository,
+        MenuAuthorityInterface $menuAuthorityRepository,
         CurrentAllUserProfilesByUserInterface $currentAllUserProfilesByUser,
         LoggerInterface $productsStocksTelegramLogger,
         ActiveUserTelegramAccountInterface $activeUserTelegramAccount,
