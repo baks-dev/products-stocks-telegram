@@ -31,12 +31,12 @@ use BaksDev\Delivery\Entity\Trans\DeliveryTrans;
 use BaksDev\Orders\Order\Entity\Order;
 use BaksDev\Orders\Order\Entity\User\Delivery\OrderDelivery;
 use BaksDev\Orders\Order\Entity\User\OrderUser;
-use BaksDev\Products\Category\Entity\Offers\ProductCategoryOffers;
-use BaksDev\Products\Category\Entity\Offers\Trans\ProductCategoryOffersTrans;
-use BaksDev\Products\Category\Entity\Offers\Variation\Modification\ProductCategoryModification;
-use BaksDev\Products\Category\Entity\Offers\Variation\Modification\Trans\ProductCategoryModificationTrans;
-use BaksDev\Products\Category\Entity\Offers\Variation\ProductCategoryVariation;
-use BaksDev\Products\Category\Entity\Offers\Variation\Trans\ProductCategoryVariationTrans;
+use BaksDev\Products\Category\Entity\Offers\CategoryProductOffers;
+use BaksDev\Products\Category\Entity\Offers\Trans\CategoryProductOffersTrans;
+use BaksDev\Products\Category\Entity\Offers\Variation\Modification\CategoryProductModification;
+use BaksDev\Products\Category\Entity\Offers\Variation\Modification\Trans\CategoryProductModificationTrans;
+use BaksDev\Products\Category\Entity\Offers\Variation\CategoryProductVariation;
+use BaksDev\Products\Category\Entity\Offers\Variation\Trans\CategoryProductVariationTrans;
 use BaksDev\Products\Product\Entity\Event\ProductEvent;
 use BaksDev\Products\Product\Entity\Offers\ProductOffer;
 use BaksDev\Products\Product\Entity\Offers\Variation\Modification\ProductModification;
@@ -255,7 +255,7 @@ final class ProductStockMoveCurrentRepository implements ProductStockMoveCurrent
         $dbal
             ->leftJoin(
                 'product_offer',
-                ProductCategoryOffers::TABLE,
+                CategoryProductOffers::TABLE,
                 'category_offer',
                 'category_offer.id = product_offer.category_offer'
             );
@@ -264,7 +264,7 @@ final class ProductStockMoveCurrentRepository implements ProductStockMoveCurrent
             ->addSelect('category_offer_trans.name as product_offer_name')
             ->leftJoin(
                 'category_offer',
-                ProductCategoryOffersTrans::TABLE,
+                CategoryProductOffersTrans::TABLE,
                 'category_offer_trans',
                 'category_offer_trans.offer = category_offer.id AND category_offer_trans.local = :local'
             );
@@ -288,7 +288,7 @@ final class ProductStockMoveCurrentRepository implements ProductStockMoveCurrent
         $dbal
             ->leftJoin(
                 'product_offer_variation',
-                ProductCategoryVariation::TABLE,
+                CategoryProductVariation::TABLE,
                 'category_offer_variation',
                 'category_offer_variation.id = product_offer_variation.category_variation'
             );
@@ -297,7 +297,7 @@ final class ProductStockMoveCurrentRepository implements ProductStockMoveCurrent
             ->addSelect('category_offer_variation_trans.name as product_variation_name')
             ->leftJoin(
                 'category_offer_variation',
-                ProductCategoryVariationTrans::TABLE,
+                CategoryProductVariationTrans::TABLE,
                 'category_offer_variation_trans',
                 'category_offer_variation_trans.variation = category_offer_variation.id AND category_offer_variation_trans.local = :local'
             );
@@ -321,7 +321,7 @@ final class ProductStockMoveCurrentRepository implements ProductStockMoveCurrent
         $dbal
             ->leftJoin(
                 'product_offer_modification',
-                ProductCategoryModification::TABLE,
+                CategoryProductModification::TABLE,
                 'category_offer_modification',
                 'category_offer_modification.id = product_offer_modification.category_modification'
             );
@@ -330,7 +330,7 @@ final class ProductStockMoveCurrentRepository implements ProductStockMoveCurrent
             ->addSelect('category_offer_modification_trans.name as product_modification_name')
             ->leftJoin(
                 'category_offer_modification',
-                ProductCategoryModificationTrans::TABLE,
+                CategoryProductModificationTrans::TABLE,
                 'category_offer_modification_trans',
                 'category_offer_modification_trans.modification = category_offer_modification.id AND category_offer_modification_trans.local = :local'
             );

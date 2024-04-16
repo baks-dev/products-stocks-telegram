@@ -29,8 +29,8 @@ use BaksDev\Auth\Telegram\Repository\AccountTelegramAdmin\AccountTelegramAdminIn
 use BaksDev\Auth\Telegram\Repository\ActiveProfileByAccountTelegram\ActiveProfileByAccountTelegramInterface;
 use BaksDev\Core\Doctrine\DBALQueryBuilder;
 use BaksDev\Core\Messenger\MessageDispatchInterface;
-use BaksDev\Products\Category\Type\Id\ProductCategoryUid;
-use BaksDev\Products\Category\Type\Section\Field\Id\ProductCategorySectionFieldUid;
+use BaksDev\Products\Category\Type\Id\CategoryProductUid;
+use BaksDev\Products\Category\Type\Section\Field\Id\CategoryProductSectionFieldUid;
 use BaksDev\Products\Stocks\Telegram\Messenger\Move\TelegramMoveMenu;
 use BaksDev\Products\Stocks\Telegram\Messenger\Move\TelegramMoveProcess;
 use BaksDev\Products\Stocks\Telegram\Messenger\Move\TelegramMoveProfile;
