@@ -113,7 +113,9 @@ final class TelegramExtraditionProfile
          * Получаем собственные профили пользователя
          */
 
-        $profiles = $this->currentAllUserProfilesByUser->fetchUserProfilesAllAssociative($this->usr);
+        // - $profiles = $this->currentAllUserProfilesByUser->fetchUserProfilesAllAssociative($this->usr);
+        // + $profiles = $this->currentAllUserProfilesByUser->fetchUserProfilesAllAssociative();
+        $profiles = $this->currentAllUserProfilesByUser->fetchUserProfilesAllAssociative();
 
         foreach($profiles as $profile)
         {
