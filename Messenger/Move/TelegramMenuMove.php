@@ -23,102 +23,90 @@
 
 declare(strict_types=1);
 
-namespace BaksDev\Products\Stocks\Telegram\Messenger\Extradition;
+namespace BaksDev\Products\Stocks\Telegram\Messenger\Move;
 
-use BaksDev\Auth\Telegram\Repository\ActiveProfileByAccountTelegram\ActiveProfileByAccountTelegramInterface;
 use BaksDev\Telegram\Api\TelegramSendMessage;
 use BaksDev\Telegram\Bot\Messenger\TelegramEndpointMessage\TelegramEndpointMessage;
-use BaksDev\Telegram\Bot\Repository\SecurityProfileIsGranted\TelegramSecurityInterface;
 use BaksDev\Telegram\Request\Type\TelegramRequestCallback;
 use BaksDev\Telegram\Request\Type\TelegramRequestMessage;
 use DateTimeImmutable;
+use Psr\Log\LoggerInterface;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 
-/**
- * Отправляет сообщение выбора начала упаковки заказов
- */
 #[AsMessageHandler]
-final class TelegramExtraditionMenu
+final class TelegramMenuMove
 {
+    private $security;
 
     private TelegramSendMessage $telegramSendMessage;
-    private TelegramSecurityInterface $telegramSecurity;
-    private ActiveProfileByAccountTelegramInterface $activeProfileByAccountTelegram;
+    private LoggerInterface $logger;
 
     public function __construct(
+        Security $security,
         TelegramSendMessage $telegramSendMessage,
-        ActiveProfileByAccountTelegramInterface $activeProfileByAccountTelegram,
-        TelegramSecurityInterface $TelegramSecurityInterface,
+        LoggerInterface $productsStocksTelegramLogger
     )
     {
+        $this->security = $security;
         $this->telegramSendMessage = $telegramSendMessage;
-        $this->telegramSecurity = $TelegramSecurityInterface;
-        $this->activeProfileByAccountTelegram = $activeProfileByAccountTelegram;
+        $this->logger = $productsStocksTelegramLogger;
     }
 
     public function __invoke(TelegramEndpointMessage $message): void
     {
+
+        dd($message);
+
+        $this->logger->debug('Telegram Menu Move Handler', [$message]);
+
         /** @var TelegramRequestMessage|TelegramRequestCallback $TelegramRequest */
         $TelegramRequest = $message->getTelegramRequest();
 
-        if($TelegramRequest === null)
-        {
-            return;
-        }
-
-        if(!($TelegramRequest instanceof TelegramRequestMessage || $TelegramRequest instanceof TelegramRequestCallback))
-        {
-            return;
-        }
-
         if($TelegramRequest instanceof TelegramRequestMessage)
         {
-            if($TelegramRequest->getText() !== '/menu')
+            if($TelegramRequest->getText() !== '/start')
             {
                 return;
             }
         }
 
-        if($TelegramRequest instanceof TelegramRequestCallback)
-        {
-            if($TelegramRequest->getCall() !== 'menu')
-            {
-                return;
-            }
-        }
+//        if($TelegramRequest instanceof TelegramRequestCallback)
+//        {
+//            if($TelegramRequest->getCall() !== 'start')
+//            {
+//                return;
+//            }
+//        }
 
-        $profile = $this->activeProfileByAccountTelegram->findByChat($TelegramRequest->getChatId());
-
-        if($profile === null)
-        {
-            return;
-        }
-
-
-        if(!$this->telegramSecurity->isExistGranted($profile, 'ROLE_PRODUCT_STOCK_PACKAGE'))
-        {
-            return;
-        }
+//        if(!$this->security->isGranted('ROLE_USER'))
+//        {
+//            return;
+//        }
 
         $this->handle($TelegramRequest);
+        $message->complete();
+
     }
 
-
     /**
-     * Отправляет сообщение выбора начала упаковки заказов
+     * Отправляет сообщение выбора начала упаковки перемещений
      */
     public function handle(TelegramRequestMessage|TelegramRequestCallback $TelegramRequest): void
     {
+        /** Символ Удалить  */
+        $char = "\u274C";
+        $decoded = json_decode('["'.$char.'"]');
+        $remove = mb_convert_encoding($decoded[0], 'UTF-8');
 
         $menu[] = [
-            'text' => '❌', // Удалить сообщение
+            'text' => $remove,
             'callback_data' => 'telegram-delete-message'
         ];
 
         $menu[] = [
-            'text' => '📦 ЗАКАЗЫ',
-            'callback_data' => TelegramExtraditionProfile::KEY
+            'text' => 'Начать упаковку перемещений',
+            'callback_data' => TelegramProfileMove::KEY
         ];
 
         $markup = json_encode([
@@ -126,10 +114,8 @@ final class TelegramExtraditionMenu
         ]);
 
         $currentDate = new DateTimeImmutable();
-        $msg = '📦 <b>Упаковка заказов</b>'.PHP_EOL;
-
-        $msg .= sprintf(
-            'Вам будет предложено собрать актуальные заказы на <b>%s</b> по одному заказу в порядке поступления.',
+        $msg = sprintf(
+            'Процесс упаковки перемещений. Вам будет предложено собрать актуальные заказы на <b>%s</b> по одному заказу в порядке поступления.',
             $currentDate->format('d.m')
         );
 

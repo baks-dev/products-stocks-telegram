@@ -25,13 +25,9 @@ declare(strict_types=1);
 
 namespace BaksDev\Products\Stocks\Telegram\Messenger\Extradition;
 
-use BaksDev\Auth\Telegram\Repository\ActiveProfileByAccountTelegram\ActiveProfileByAccountTelegramInterface;
-use BaksDev\Auth\Telegram\Repository\ActiveUserTelegramAccount\ActiveUserTelegramAccountInterface;
-use BaksDev\Menu\Admin\Repository\MenuAuthority\MenuAuthorityInterface;
-use BaksDev\Products\Stocks\Telegram\Messenger\Move\TelegramMoveProcess;
+use BaksDev\Menu\Admin\Repository\MenuAuthority\MenuAuthorityRepositoryInterface;
 use BaksDev\Telegram\Api\TelegramSendMessage;
 use BaksDev\Telegram\Bot\Messenger\TelegramEndpointMessage\TelegramEndpointMessage;
-use BaksDev\Telegram\Bot\Repository\SecurityProfileIsGranted\TelegramSecurityInterface;
 use BaksDev\Telegram\Request\Type\TelegramRequestCallback;
 use BaksDev\Users\Profile\UserProfile\Repository\CurrentAllUserProfiles\CurrentAllUserProfilesByUserInterface;
 use BaksDev\Users\User\Type\Id\UserUid;
@@ -41,39 +37,30 @@ use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 
 
 #[AsMessageHandler]
-final class TelegramExtraditionProfile
+final class TelegramProfileExtradition
 {
-    public const KEY = 'mKMnjAwMMk';
+    public const KEY = 'uAcQHYHzqF';
 
-    private ?UserUid $usr;
+    private $security;
 
     private TelegramSendMessage $telegramSendMessage;
-    private MenuAuthorityInterface $menuAuthorityRepository;
+    private MenuAuthorityRepositoryInterface $menuAuthorityRepository;
     private CurrentAllUserProfilesByUserInterface $currentAllUserProfilesByUser;
     private LoggerInterface $logger;
-    private TelegramSecurityInterface $TelegramSecurity;
-    private ActiveUserTelegramAccountInterface $activeUserTelegramAccount;
-    private ActiveProfileByAccountTelegramInterface $activeProfileByAccountTelegram;
-
 
     public function __construct(
-
+        Security $security,
         TelegramSendMessage $telegramSendMessage,
-        MenuAuthorityInterface $menuAuthorityRepository,
+        MenuAuthorityRepositoryInterface $menuAuthorityRepository,
         CurrentAllUserProfilesByUserInterface $currentAllUserProfilesByUser,
-        LoggerInterface $productsStocksTelegramLogger,
-        ActiveUserTelegramAccountInterface $activeUserTelegramAccount,
-        TelegramSecurityInterface $TelegramSecurity,
-        ActiveProfileByAccountTelegramInterface $activeProfileByAccountTelegram,
+        LoggerInterface $productsStocksTelegramLogger
     )
     {
+        $this->security = $security;
         $this->telegramSendMessage = $telegramSendMessage;
         $this->menuAuthorityRepository = $menuAuthorityRepository;
         $this->currentAllUserProfilesByUser = $currentAllUserProfilesByUser;
         $this->logger = $productsStocksTelegramLogger;
-        $this->TelegramSecurity = $TelegramSecurity;
-        $this->activeUserTelegramAccount = $activeUserTelegramAccount;
-        $this->activeProfileByAccountTelegram = $activeProfileByAccountTelegram;
     }
 
     public function __invoke(TelegramEndpointMessage $message): void
@@ -91,9 +78,7 @@ final class TelegramExtraditionProfile
             return;
         }
 
-        $this->usr = $this->activeUserTelegramAccount->findByChat($TelegramRequest->getChatId());
-
-        if($this->usr === null)
+        if(!$this->security->isGranted('ROLE_USER'))
         {
             return;
         }
@@ -109,46 +94,41 @@ final class TelegramExtraditionProfile
     public function handle(TelegramRequestCallback $TelegramRequest): void
     {
 
+        $User = $this->security->getToken()?->getUser();
+
         /**
          * Получаем собственные профили пользователя
          */
 
-        // - $profiles = $this->currentAllUserProfilesByUser->fetchUserProfilesAllAssociative($this->usr);
-        // + $profiles = $this->currentAllUserProfilesByUser->fetchUserProfilesAllAssociative();
-        $profiles = $this->currentAllUserProfilesByUser->fetchUserProfilesAllAssociative();
+        $UserUid = $User?->getId();
+
+        /** TODO профиль  */
+        $UserUid = new UserUid('018d464c-26cb-7fcb-aa15-ba9ec661740e');
+
+        $profiles = $this->currentAllUserProfilesByUser->fetchUserProfilesAllAssociative($UserUid);
 
         foreach($profiles as $profile)
         {
-            if($this->TelegramSecurity->isGranted($profile['user_profile_id'], 'ROLE_PRODUCT_STOCK_PACKAGE'))
-            {
-                $menu[] = [
-                    'text' => $profile['user_profile_username'],
-                    'callback_data' => TelegramExtraditionProcess::KEY.'|'.$profile['user_profile_id']
-                ];
-            }
+            $menu[] = [
+                'text' => $profile['user_profile_username'],
+                'callback_data' => TelegramExtraditionProcess::KEY.'|'.$profile['user_profile_id']
+            ];
         }
-
-
 
         /**
          * Получаем профили доверенностей
          */
 
-        $UserProfileUid = $this->activeProfileByAccountTelegram->findByChat($TelegramRequest->getChatId());
+        $UserProfileUid = $User?->getProfile();
         $profiles = $this->menuAuthorityRepository->findAll($UserProfileUid);
 
         foreach($profiles as $profile)
         {
-            if($this->TelegramSecurity->isGranted($UserProfileUid, 'ROLE_PRODUCT_STOCK_PACKAGE', $profile['authority']))
-            {
-                $menu[] = [
-                    'text' => $profile['authority_username'],
-                    'callback_data' => TelegramExtraditionProcess::KEY.'|'.$profile['authority']
-                ];
-            }
+            $menu[] = [
+                'text' => $profile['authority_username'],
+                'callback_data' => TelegramExtraditionProcess::KEY.'|'.$profile['authority']
+            ];
         }
-
-
 
         $markup = null;
 
@@ -159,18 +139,18 @@ final class TelegramExtraditionProfile
             ]);
         }
 
-        $msg = '<b>Выберите профиль пользователя для сборки заказов:</b>';
+        $msg = '<b>Выберите профиль пользователя:</b>';
         $msg .= PHP_EOL;
 
         $this
             ->telegramSendMessage
-            ->delete([$TelegramRequest->getId(), $TelegramRequest->getLast()])
+            ->delete([$TelegramRequest->getSystem()])
             ->chanel($TelegramRequest->getChatId())
             ->message($msg)
             ->markup($markup)
             ->send();
 
-        $this->logger->debug('Пользователь начал процесс упаковки заказов', ['UserUid' => $this->usr]);
+        $this->logger->debug('Пользователь начал процесс упаковки заказов', ['UserUid' => $UserUid]);
     }
 }
 

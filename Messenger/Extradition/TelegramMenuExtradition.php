@@ -25,36 +25,29 @@ declare(strict_types=1);
 
 namespace BaksDev\Products\Stocks\Telegram\Messenger\Extradition;
 
-use BaksDev\Auth\Telegram\Repository\ActiveProfileByAccountTelegram\ActiveProfileByAccountTelegramInterface;
 use BaksDev\Telegram\Api\TelegramSendMessage;
 use BaksDev\Telegram\Bot\Messenger\TelegramEndpointMessage\TelegramEndpointMessage;
-use BaksDev\Telegram\Bot\Repository\SecurityProfileIsGranted\TelegramSecurityInterface;
 use BaksDev\Telegram\Request\Type\TelegramRequestCallback;
 use BaksDev\Telegram\Request\Type\TelegramRequestMessage;
 use DateTimeImmutable;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 
-/**
- * Отправляет сообщение выбора начала упаковки заказов
- */
+
 #[AsMessageHandler]
-final class TelegramExtraditionMenu
+final class TelegramMenuExtradition
 {
+    private $security;
 
     private TelegramSendMessage $telegramSendMessage;
-    private TelegramSecurityInterface $telegramSecurity;
-    private ActiveProfileByAccountTelegramInterface $activeProfileByAccountTelegram;
 
     public function __construct(
+        Security $security,
         TelegramSendMessage $telegramSendMessage,
-        ActiveProfileByAccountTelegramInterface $activeProfileByAccountTelegram,
-        TelegramSecurityInterface $TelegramSecurityInterface,
     )
     {
+        $this->security = $security;
         $this->telegramSendMessage = $telegramSendMessage;
-        $this->telegramSecurity = $TelegramSecurityInterface;
-        $this->activeProfileByAccountTelegram = $activeProfileByAccountTelegram;
     }
 
     public function __invoke(TelegramEndpointMessage $message): void
@@ -62,19 +55,9 @@ final class TelegramExtraditionMenu
         /** @var TelegramRequestMessage|TelegramRequestCallback $TelegramRequest */
         $TelegramRequest = $message->getTelegramRequest();
 
-        if($TelegramRequest === null)
-        {
-            return;
-        }
-
-        if(!($TelegramRequest instanceof TelegramRequestMessage || $TelegramRequest instanceof TelegramRequestCallback))
-        {
-            return;
-        }
-
         if($TelegramRequest instanceof TelegramRequestMessage)
         {
-            if($TelegramRequest->getText() !== '/menu')
+            if($TelegramRequest->getText() !== '/start')
             {
                 return;
             }
@@ -82,43 +65,40 @@ final class TelegramExtraditionMenu
 
         if($TelegramRequest instanceof TelegramRequestCallback)
         {
-            if($TelegramRequest->getCall() !== 'menu')
+            if($TelegramRequest->getCall() !== 'start')
             {
                 return;
             }
         }
 
-        $profile = $this->activeProfileByAccountTelegram->findByChat($TelegramRequest->getChatId());
-
-        if($profile === null)
-        {
-            return;
-        }
-
-
-        if(!$this->telegramSecurity->isExistGranted($profile, 'ROLE_PRODUCT_STOCK_PACKAGE'))
+        if(!$this->security->isGranted('ROLE_USER'))
         {
             return;
         }
 
         $this->handle($TelegramRequest);
-    }
+        $message->complete();
 
+    }
 
     /**
      * Отправляет сообщение выбора начала упаковки заказов
      */
     public function handle(TelegramRequestMessage|TelegramRequestCallback $TelegramRequest): void
     {
+        /** Символ Удалить  */
+        $char = "\u274C";
+        $decoded = json_decode('["'.$char.'"]');
+        $remove = mb_convert_encoding($decoded[0], 'UTF-8');
 
         $menu[] = [
-            'text' => '❌', // Удалить сообщение
+            'text' => $remove,
             'callback_data' => 'telegram-delete-message'
         ];
 
         $menu[] = [
-            'text' => '📦 ЗАКАЗЫ',
-            'callback_data' => TelegramExtraditionProfile::KEY
+            'text' => 'Начать упаковку заказов',
+            'callback_data' => TelegramProfileExtradition::KEY
         ];
 
         $markup = json_encode([
@@ -126,10 +106,8 @@ final class TelegramExtraditionMenu
         ]);
 
         $currentDate = new DateTimeImmutable();
-        $msg = '📦 <b>Упаковка заказов</b>'.PHP_EOL;
-
-        $msg .= sprintf(
-            'Вам будет предложено собрать актуальные заказы на <b>%s</b> по одному заказу в порядке поступления.',
+        $msg = sprintf(
+            'Процесс упаковки заказов. Вам будет предложено собрать актуальные заказы на <b>%s</b> по одному заказу в порядке поступления.',
             $currentDate->format('d.m')
         );
 
