@@ -48,8 +48,8 @@ use BaksDev\Products\Stocks\UseCase\Admin\Extradition\ExtraditionProductStockHan
 use BaksDev\Products\Stocks\UseCase\Admin\Moving\MovingProductStockHandler;
 use BaksDev\Products\Stocks\UseCase\Admin\Warehouse\WarehouseProductStockDTO;
 use BaksDev\Products\Stocks\UseCase\Admin\Warehouse\WarehouseProductStockHandler;
-use BaksDev\Telegram\Api\TelegramDeleteMessage;
-use BaksDev\Telegram\Api\TelegramSendMessage;
+use BaksDev\Telegram\Api\TelegramDeleteMessages;
+use BaksDev\Telegram\Api\TelegramSendMessages;
 use BaksDev\Telegram\Bot\Messenger\TelegramEndpointMessage\TelegramEndpointMessage;
 use BaksDev\Telegram\Bot\Repository\SecurityProfileIsGranted\TelegramSecurityInterface;
 use BaksDev\Telegram\Request\TelegramRequest;
@@ -70,7 +70,7 @@ final class TelegramMoveDone
 {
     public const KEY = 'pVPMFRhw';
 
-    private TelegramSendMessage $telegramSendMessage;
+    private TelegramSendMessages $telegramSendMessage;
     private ProductStockFixedInterface $productStockFixed;
     private TelegramMoveProcess $moveProcess;
     private ORMQueryBuilder $ORMQueryBuilder;
@@ -82,7 +82,7 @@ final class TelegramMoveDone
 
     public function __construct(
         ORMQueryBuilder $ORMQueryBuilder,
-        TelegramSendMessage $telegramSendMessage,
+        TelegramSendMessages $telegramSendMessage,
         TelegramMoveProcess $moveProcess,
         LoggerInterface $productsStocksTelegramLogger,
         ActiveProfileByAccountTelegramInterface $activeProfileByAccountTelegram,

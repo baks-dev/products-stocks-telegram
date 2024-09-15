@@ -36,8 +36,8 @@ use BaksDev\Core\Cache\AppCacheInterface;
 use BaksDev\Manufacture\Part\Telegram\Type\ManufacturePartDone;
 use BaksDev\Products\Stocks\Telegram\Repository\ProductStockFixed\ProductStockFixedInterface;
 use BaksDev\Products\Stocks\Type\Event\ProductStockEventUid;
-use BaksDev\Telegram\Api\TelegramDeleteMessage;
-use BaksDev\Telegram\Api\TelegramSendMessage;
+use BaksDev\Telegram\Api\TelegramDeleteMessages;
+use BaksDev\Telegram\Api\TelegramSendMessages;
 use BaksDev\Telegram\Bot\Messenger\TelegramEndpointMessage\TelegramEndpointMessage;
 use BaksDev\Telegram\Request\TelegramRequest;
 use BaksDev\Telegram\Request\Type\TelegramRequestCallback;
@@ -55,7 +55,7 @@ final class TelegramMoveCancel
 {
     public const KEY = 'FZactayP';
 
-    private TelegramSendMessage $telegramSendMessage;
+    private TelegramSendMessages $telegramSendMessage;
     private ProductStockFixedInterface $productStockFixed;
     private LoggerInterface $logger;
     private ActiveProfileByAccountTelegramInterface $activeProfileByAccountTelegram;
@@ -63,7 +63,7 @@ final class TelegramMoveCancel
     private ?UserProfileUid $profile;
 
     public function __construct(
-        TelegramSendMessage $telegramSendMessage,
+        TelegramSendMessages $telegramSendMessage,
         ProductStockFixedInterface $productStockFixed,
         LoggerInterface $productsStocksTelegramLogger,
         ActiveProfileByAccountTelegramInterface $activeProfileByAccountTelegram,

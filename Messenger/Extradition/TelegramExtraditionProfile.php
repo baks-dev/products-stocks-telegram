@@ -29,7 +29,7 @@ use BaksDev\Auth\Telegram\Repository\ActiveProfileByAccountTelegram\ActiveProfil
 use BaksDev\Auth\Telegram\Repository\ActiveUserTelegramAccount\ActiveUserTelegramAccountInterface;
 use BaksDev\Menu\Admin\Repository\MenuAuthority\MenuAuthorityInterface;
 use BaksDev\Products\Stocks\Telegram\Messenger\Move\TelegramMoveProcess;
-use BaksDev\Telegram\Api\TelegramSendMessage;
+use BaksDev\Telegram\Api\TelegramSendMessages;
 use BaksDev\Telegram\Bot\Messenger\TelegramEndpointMessage\TelegramEndpointMessage;
 use BaksDev\Telegram\Bot\Repository\SecurityProfileIsGranted\TelegramSecurityInterface;
 use BaksDev\Telegram\Request\Type\TelegramRequestCallback;
@@ -47,7 +47,7 @@ final class TelegramExtraditionProfile
 
     private ?UserUid $usr;
 
-    private TelegramSendMessage $telegramSendMessage;
+    private TelegramSendMessages $telegramSendMessage;
     private MenuAuthorityInterface $menuAuthorityRepository;
     private CurrentAllUserProfilesByUserInterface $currentAllUserProfilesByUser;
     private LoggerInterface $logger;
@@ -58,7 +58,7 @@ final class TelegramExtraditionProfile
 
     public function __construct(
 
-        TelegramSendMessage $telegramSendMessage,
+        TelegramSendMessages $telegramSendMessage,
         MenuAuthorityInterface $menuAuthorityRepository,
         CurrentAllUserProfilesByUserInterface $currentAllUserProfilesByUser,
         LoggerInterface $productsStocksTelegramLogger,

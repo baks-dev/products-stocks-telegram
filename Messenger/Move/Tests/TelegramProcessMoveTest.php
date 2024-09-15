@@ -34,7 +34,7 @@ use BaksDev\Products\Category\Type\Section\Field\Id\CategoryProductSectionFieldU
 use BaksDev\Products\Stocks\Telegram\Messenger\Move\TelegramMoveMenu;
 use BaksDev\Products\Stocks\Telegram\Messenger\Move\TelegramMoveProcess;
 use BaksDev\Products\Stocks\Telegram\Messenger\Move\TelegramMoveProfile;
-use BaksDev\Telegram\Api\TelegramSendMessage;
+use BaksDev\Telegram\Api\TelegramSendMessages;
 use BaksDev\Telegram\Bot\Messenger\TelegramEndpointMessage\TelegramEndpointMessage;
 use BaksDev\Telegram\Bot\Repository\UsersTableTelegramSettings\TelegramBotSettingsInterface;
 use BaksDev\Telegram\Request\TelegramRequest;

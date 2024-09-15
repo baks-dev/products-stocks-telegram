@@ -35,8 +35,8 @@ use BaksDev\Core\Cache\AppCacheInterface;
 use BaksDev\Manufacture\Part\Telegram\Type\ManufacturePartDone;
 use BaksDev\Products\Stocks\Telegram\Repository\ProductStockFixed\ProductStockFixedInterface;
 use BaksDev\Products\Stocks\Type\Event\ProductStockEventUid;
-use BaksDev\Telegram\Api\TelegramDeleteMessage;
-use BaksDev\Telegram\Api\TelegramSendMessage;
+use BaksDev\Telegram\Api\TelegramDeleteMessages;
+use BaksDev\Telegram\Api\TelegramSendMessages;
 use BaksDev\Telegram\Bot\Messenger\TelegramEndpointMessage\TelegramEndpointMessage;
 use BaksDev\Telegram\Request\TelegramRequest;
 use BaksDev\Telegram\Request\Type\TelegramRequestCallback;
@@ -55,13 +55,13 @@ final class TelegramExtraditionCancel
     public const KEY = 'DNymaQWqGH';
 
     private $security;
-    private TelegramSendMessage $telegramSendMessage;
+    private TelegramSendMessages $telegramSendMessage;
     private ProductStockFixedInterface $productStockFixed;
     private LoggerInterface $logger;
 
     public function __construct(
         Security $security,
-        TelegramSendMessage $telegramSendMessage,
+        TelegramSendMessages $telegramSendMessage,
         ProductStockFixedInterface $productStockFixed,
         LoggerInterface $productsStocksTelegramLogger
     )

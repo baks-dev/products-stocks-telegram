@@ -29,7 +29,7 @@ use BaksDev\Auth\Telegram\Repository\ActiveProfileByAccountTelegram\ActiveProfil
 use BaksDev\Products\Stocks\Telegram\Repository\ProductStockFixed\ProductStockFixedInterface;
 use BaksDev\Products\Stocks\Telegram\Repository\ProductStockNextExtradition\ProductStockNextExtraditionInterface;
 use BaksDev\Products\Stocks\Type\Event\ProductStockEventUid;
-use BaksDev\Telegram\Api\TelegramSendMessage;
+use BaksDev\Telegram\Api\TelegramSendMessages;
 use BaksDev\Telegram\Bot\Messenger\TelegramEndpointMessage\TelegramEndpointMessage;
 use BaksDev\Telegram\Request\Type\TelegramRequestCallback;
 use Psr\Log\LoggerInterface;
@@ -40,7 +40,7 @@ final class TelegramExtraditionProcess
 {
     public const KEY = 'eKzkUvKQq';
 
-    private TelegramSendMessage $telegramSendMessage;
+    private TelegramSendMessages $telegramSendMessage;
 
     private ProductStockFixedInterface $productStockFixed;
     private ProductStockNextExtraditionInterface $productStockNextExtradition;
@@ -49,7 +49,7 @@ final class TelegramExtraditionProcess
 
     public function __construct(
 
-        TelegramSendMessage $telegramSendMessage,
+        TelegramSendMessages $telegramSendMessage,
         ProductStockFixedInterface $productStockFixed,
         ProductStockNextExtraditionInterface $productStockNextExtradition,
         LoggerInterface $productsStocksTelegramLogger,

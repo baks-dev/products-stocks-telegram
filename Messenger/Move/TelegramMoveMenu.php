@@ -26,7 +26,7 @@ declare(strict_types=1);
 namespace BaksDev\Products\Stocks\Telegram\Messenger\Move;
 
 use BaksDev\Auth\Telegram\Repository\ActiveProfileByAccountTelegram\ActiveProfileByAccountTelegramInterface;
-use BaksDev\Telegram\Api\TelegramSendMessage;
+use BaksDev\Telegram\Api\TelegramSendMessages;
 use BaksDev\Telegram\Bot\Messenger\TelegramEndpointMessage\TelegramEndpointMessage;
 use BaksDev\Telegram\Bot\Repository\SecurityProfileIsGranted\TelegramSecurityInterface;
 use BaksDev\Telegram\Request\Type\TelegramRequestCallback;
@@ -37,12 +37,12 @@ use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 #[AsMessageHandler]
 final class TelegramMoveMenu
 {
-    private TelegramSendMessage $telegramSendMessage;
+    private TelegramSendMessages $telegramSendMessage;
     private TelegramSecurityInterface $telegramSecurity;
     private ActiveProfileByAccountTelegramInterface $activeProfileByAccountTelegram;
 
     public function __construct(
-        TelegramSendMessage $telegramSendMessage,
+        TelegramSendMessages $telegramSendMessage,
         ActiveProfileByAccountTelegramInterface $activeProfileByAccountTelegram,
         TelegramSecurityInterface $TelegramSecurityInterface,
     )

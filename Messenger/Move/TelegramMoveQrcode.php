@@ -38,7 +38,7 @@ use BaksDev\Products\Stocks\Type\Event\ProductStockEventUid;
 use BaksDev\Products\Stocks\Type\Id\ProductStockUid;
 use BaksDev\Products\Stocks\Type\Status\ProductStockStatus;
 use BaksDev\Products\Stocks\Type\Status\ProductStockStatus\ProductStockStatusMoving;
-use BaksDev\Telegram\Api\TelegramSendMessage;
+use BaksDev\Telegram\Api\TelegramSendMessages;
 use BaksDev\Telegram\Bot\Messenger\TelegramEndpointMessage\TelegramEndpointMessage;
 use BaksDev\Telegram\Bot\Repository\SecurityProfileIsGranted\TelegramSecurityInterface;
 use BaksDev\Telegram\Request\Type\TelegramRequestCallback;
@@ -59,7 +59,7 @@ final class TelegramMoveQrcode
 
     private ?UserUid $usr = null;
 
-    private TelegramSendMessage $telegramSendMessage;
+    private TelegramSendMessages $telegramSendMessage;
     private MenuAuthorityInterface $menuAuthorityRepository;
     private CurrentAllUserProfilesByUserInterface $currentAllUserProfilesByUser;
     private LoggerInterface $logger;
@@ -75,7 +75,7 @@ final class TelegramMoveQrcode
     private array|bool $stockMoveCurrent;
 
     public function __construct(
-        TelegramSendMessage $telegramSendMessage,
+        TelegramSendMessages $telegramSendMessage,
         MenuAuthorityInterface $menuAuthorityRepository,
         CurrentAllUserProfilesByUserInterface $currentAllUserProfilesByUser,
         LoggerInterface $productsStocksTelegramLogger,

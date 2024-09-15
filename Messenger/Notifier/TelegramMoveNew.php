@@ -31,7 +31,7 @@ use BaksDev\Products\Stocks\Repository\CurrentProductStocks\CurrentProductStocks
 use BaksDev\Products\Stocks\Telegram\Messenger\Move\TelegramMoveProcess;
 use BaksDev\Products\Stocks\Type\Status\ProductStockStatus\Collection\ProductStockStatusCollection;
 use BaksDev\Products\Stocks\Type\Status\ProductStockStatus\ProductStockStatusMoving;
-use BaksDev\Telegram\Api\TelegramSendMessage;
+use BaksDev\Telegram\Api\TelegramSendMessages;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
@@ -42,7 +42,7 @@ final class TelegramMoveNew
     private EntityManagerInterface $entityManager;
     private CurrentProductStocksInterface $currentProductStocks;
     private AccountTelegramRoleInterface $accountTelegramRole;
-    private TelegramSendMessage $telegramSendMessage;
+    private TelegramSendMessages $telegramSendMessage;
     private LoggerInterface $logger;
 
     public function __construct(
@@ -50,7 +50,7 @@ final class TelegramMoveNew
         ProductStockStatusCollection $ProductStockStatusCollection,
         CurrentProductStocksInterface $currentProductStocks,
         AccountTelegramRoleInterface $accountTelegramRole,
-        TelegramSendMessage $telegramSendMessage,
+        TelegramSendMessages $telegramSendMessage,
         LoggerInterface $productsStocksTelegramLogger,
     )
     {

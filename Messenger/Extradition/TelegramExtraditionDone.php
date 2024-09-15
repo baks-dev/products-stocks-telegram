@@ -44,8 +44,8 @@ use BaksDev\Products\Stocks\Type\Status\ProductStockStatus;
 use BaksDev\Products\Stocks\Type\Status\ProductStockStatus\ProductStockStatusPackage;
 use BaksDev\Products\Stocks\UseCase\Admin\Extradition\ExtraditionProductStockDTO;
 use BaksDev\Products\Stocks\UseCase\Admin\Extradition\ExtraditionProductStockHandler;
-use BaksDev\Telegram\Api\TelegramDeleteMessage;
-use BaksDev\Telegram\Api\TelegramSendMessage;
+use BaksDev\Telegram\Api\TelegramDeleteMessages;
+use BaksDev\Telegram\Api\TelegramSendMessages;
 use BaksDev\Telegram\Bot\Messenger\TelegramEndpointMessage\TelegramEndpointMessage;
 use BaksDev\Telegram\Bot\Repository\SecurityProfileIsGranted\TelegramSecurityInterface;
 use BaksDev\Telegram\Request\TelegramRequest;
@@ -68,7 +68,7 @@ final class TelegramExtraditionDone
 
     private ?UserProfileUid $profile;
 
-    private TelegramSendMessage $telegramSendMessage;
+    private TelegramSendMessages $telegramSendMessage;
     private ProductStockFixedInterface $productStockFixed;
     private TelegramExtraditionProcess $extraditionProcess;
     private ORMQueryBuilder $ORMQueryBuilder;
@@ -80,7 +80,7 @@ final class TelegramExtraditionDone
 
     public function __construct(
         ORMQueryBuilder $ORMQueryBuilder,
-        TelegramSendMessage $telegramSendMessage,
+        TelegramSendMessages $telegramSendMessage,
         TelegramExtraditionProcess $extraditionProcess,
         ExtraditionProductStockHandler $extraditionProductStockHandler,
         LoggerInterface $productsStocksTelegramLogger,
