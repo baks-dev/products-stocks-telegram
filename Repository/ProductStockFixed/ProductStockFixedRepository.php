@@ -26,7 +26,7 @@ declare(strict_types=1);
 namespace BaksDev\Products\Stocks\Telegram\Repository\ProductStockFixed;
 
 use BaksDev\Core\Doctrine\DBALQueryBuilder;
-use BaksDev\Products\Stocks\Entity\Event\ProductStockEvent;
+use BaksDev\Products\Stocks\Entity\Stock\Event\ProductStockEvent;
 use BaksDev\Products\Stocks\Type\Event\ProductStockEventUid;
 use BaksDev\Users\Profile\UserProfile\Entity\Personal\UserProfilePersonal;
 use BaksDev\Users\Profile\UserProfile\Entity\UserProfile;
