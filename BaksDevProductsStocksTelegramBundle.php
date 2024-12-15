@@ -32,9 +32,9 @@ use Symfony\Component\HttpKernel\Bundle\AbstractBundle;
 
 class BaksDevProductsStocksTelegramBundle extends AbstractBundle
 {
-    public const NAMESPACE = __NAMESPACE__.'\\';
+    public const string NAMESPACE = __NAMESPACE__.'\\';
 
-    public const PATH = __DIR__.DIRECTORY_SEPARATOR;
+    public const string PATH = __DIR__.DIRECTORY_SEPARATOR;
 
     //    public function loadExtension(array $config, ContainerConfigurator $container, ContainerBuilder $builder): void
     //    {

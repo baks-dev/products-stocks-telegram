@@ -28,18 +28,16 @@ namespace BaksDev\Products\Stocks\Telegram\Repository\ProductStockNextExtraditio
 use BaksDev\Core\Doctrine\DBALQueryBuilder;
 use BaksDev\Delivery\Entity\Event\DeliveryEvent;
 use BaksDev\Delivery\Entity\Trans\DeliveryTrans;
-use BaksDev\DeliveryTransport\Type\ProductStockStatus\ProductStockStatusDivide;
 use BaksDev\Orders\Order\Entity\Order;
 use BaksDev\Orders\Order\Entity\User\Delivery\OrderDelivery;
 use BaksDev\Orders\Order\Entity\User\OrderUser;
 use BaksDev\Products\Category\Entity\Offers\CategoryProductOffers;
 use BaksDev\Products\Category\Entity\Offers\Trans\CategoryProductOffersTrans;
+use BaksDev\Products\Category\Entity\Offers\Variation\CategoryProductVariation;
 use BaksDev\Products\Category\Entity\Offers\Variation\Modification\CategoryProductModification;
 use BaksDev\Products\Category\Entity\Offers\Variation\Modification\Trans\CategoryProductModificationTrans;
-use BaksDev\Products\Category\Entity\Offers\Variation\CategoryProductVariation;
 use BaksDev\Products\Category\Entity\Offers\Variation\Trans\CategoryProductVariationTrans;
 use BaksDev\Products\Product\Entity\Event\ProductEvent;
-use BaksDev\Products\Product\Entity\Info\ProductInfo;
 use BaksDev\Products\Product\Entity\Offers\ProductOffer;
 use BaksDev\Products\Product\Entity\Offers\Variation\Modification\ProductModification;
 use BaksDev\Products\Product\Entity\Offers\Variation\ProductVariation;
@@ -52,29 +50,20 @@ use BaksDev\Products\Stocks\Entity\Stock\Products\ProductStockProduct;
 use BaksDev\Products\Stocks\Entity\Stock\ProductStock;
 use BaksDev\Products\Stocks\Entity\Total\ProductStockTotal;
 use BaksDev\Products\Stocks\Type\Event\ProductStockEventUid;
-use BaksDev\Products\Stocks\Type\Id\ProductStockUid;
 use BaksDev\Products\Stocks\Type\Status\ProductStockStatus;
-use BaksDev\Products\Stocks\Type\Status\ProductStockStatus\ProductStockStatusPackage;
 use BaksDev\Products\Stocks\Type\Status\ProductStockStatus\ProductStockStatusMoving;
-use BaksDev\Products\Stocks\Type\Status\ProductStockStatus\ProductStockStatusError;
+use BaksDev\Products\Stocks\Type\Status\ProductStockStatus\ProductStockStatusPackage;
 use BaksDev\Users\Profile\UserProfile\Entity\Personal\UserProfilePersonal;
 use BaksDev\Users\Profile\UserProfile\Entity\UserProfile;
 use BaksDev\Users\Profile\UserProfile\Type\Id\UserProfileUid;
 
 final class ProductStockNextExtraditionRepository implements ProductStockNextExtraditionInterface
 {
-    private DBALQueryBuilder $DBALQueryBuilder;
-
     private ?ProductStockEventUid $event = null;
 
     private UserProfileUid $profile;
 
-    public function __construct(
-        DBALQueryBuilder $DBALQueryBuilder,
-    )
-    {
-        $this->DBALQueryBuilder = $DBALQueryBuilder;
-    }
+    public function __construct(private readonly DBALQueryBuilder $DBALQueryBuilder) {}
 
     /**
      * Метод возвращает незафиксированную (либо зафиксированную текущего профиля) заявку для упаковки
@@ -151,7 +140,7 @@ final class ProductStockNextExtraditionRepository implements ProductStockNextExt
 
         $dbal->join(
             'main',
-            ProductStockOrder::TABLE,
+            ProductStockOrder::class,
             'ord',
             'ord.event = main.event'
         );
@@ -159,31 +148,29 @@ final class ProductStockNextExtraditionRepository implements ProductStockNextExt
 
         $dbal->leftJoin(
             'ord',
-            Order::TABLE,
+            Order::class,
             'orders',
             'orders.id = ord.ord'
         );
 
         $dbal->leftJoin(
             'orders',
-            OrderUser::TABLE,
+            OrderUser::class,
             'order_user',
             'order_user.event = orders.event'
         );
 
 
-
-
         $dbal->leftJoin(
             'order_user',
-            OrderDelivery::TABLE,
+            OrderDelivery::class,
             'order_delivery',
             'order_delivery.usr = order_user.id'
         );
 
         $dbal->leftJoin(
             'order_delivery',
-            DeliveryEvent::TABLE,
+            DeliveryEvent::class,
             'delivery_event',
             'delivery_event.id = order_delivery.event AND delivery_event.main = order_delivery.delivery'
         );
@@ -193,7 +180,7 @@ final class ProductStockNextExtraditionRepository implements ProductStockNextExt
             ->addSelect('delivery_trans.name AS delivery_name')
             ->leftJoin(
                 'delivery_event',
-                DeliveryTrans::TABLE,
+                DeliveryTrans::class,
                 'delivery_trans',
                 'delivery_trans.event = delivery_event.id AND delivery_trans.local = :local'
             );
@@ -236,7 +223,7 @@ final class ProductStockNextExtraditionRepository implements ProductStockNextExt
         $dbal
             ->join(
                 'stock_product',
-                Product::TABLE,
+                Product::class,
                 'product',
                 'product.id = stock_product.product'
             );
@@ -244,7 +231,7 @@ final class ProductStockNextExtraditionRepository implements ProductStockNextExt
         // Product Event
         $dbal->join(
             'product',
-            ProductEvent::TABLE,
+            ProductEvent::class,
             'product_event',
             'product_event.id = product.event'
         );
@@ -253,7 +240,7 @@ final class ProductStockNextExtraditionRepository implements ProductStockNextExt
             ->addSelect('product_trans.name as product_name')
             ->join(
                 'product_event',
-                ProductTrans::TABLE,
+                ProductTrans::class,
                 'product_trans',
                 'product_trans.event = product_event.id AND product_trans.local = :local'
             );
@@ -268,7 +255,7 @@ final class ProductStockNextExtraditionRepository implements ProductStockNextExt
             ->addSelect('product_offer.postfix as product_offer_postfix')
             ->leftJoin(
                 'product_event',
-                ProductOffer::TABLE,
+                ProductOffer::class,
                 'product_offer',
                 'product_offer.event = product_event.id AND product_offer.const = stock_product.offer'
             );
@@ -277,7 +264,7 @@ final class ProductStockNextExtraditionRepository implements ProductStockNextExt
         $dbal
             ->leftJoin(
                 'product_offer',
-                CategoryProductOffers::TABLE,
+                CategoryProductOffers::class,
                 'category_offer',
                 'category_offer.id = product_offer.category_offer'
             );
@@ -286,7 +273,7 @@ final class ProductStockNextExtraditionRepository implements ProductStockNextExt
             ->addSelect('category_offer_trans.name as product_offer_name')
             ->leftJoin(
                 'category_offer',
-                CategoryProductOffersTrans::TABLE,
+                CategoryProductOffersTrans::class,
                 'category_offer_trans',
                 'category_offer_trans.offer = category_offer.id AND category_offer_trans.local = :local'
             );
@@ -301,7 +288,7 @@ final class ProductStockNextExtraditionRepository implements ProductStockNextExt
             ->addSelect('product_offer_variation.postfix as product_variation_postfix')
             ->leftJoin(
                 'product_offer',
-                ProductVariation::TABLE,
+                ProductVariation::class,
                 'product_offer_variation',
                 'product_offer_variation.offer = product_offer.id AND product_offer_variation.const = stock_product.variation'
             );
@@ -310,7 +297,7 @@ final class ProductStockNextExtraditionRepository implements ProductStockNextExt
         $dbal
             ->leftJoin(
                 'product_offer_variation',
-                CategoryProductVariation::TABLE,
+                CategoryProductVariation::class,
                 'category_offer_variation',
                 'category_offer_variation.id = product_offer_variation.category_variation'
             );
@@ -319,7 +306,7 @@ final class ProductStockNextExtraditionRepository implements ProductStockNextExt
             ->addSelect('category_offer_variation_trans.name as product_variation_name')
             ->leftJoin(
                 'category_offer_variation',
-                CategoryProductVariationTrans::TABLE,
+                CategoryProductVariationTrans::class,
                 'category_offer_variation_trans',
                 'category_offer_variation_trans.variation = category_offer_variation.id AND category_offer_variation_trans.local = :local'
             );
@@ -334,7 +321,7 @@ final class ProductStockNextExtraditionRepository implements ProductStockNextExt
             ->addSelect('product_offer_modification.postfix as product_modification_postfix')
             ->leftJoin(
                 'product_offer_variation',
-                ProductModification::TABLE,
+                ProductModification::class,
                 'product_offer_modification',
                 'product_offer_modification.variation = product_offer_variation.id AND product_offer_modification.const = stock_product.modification'
             );
@@ -343,7 +330,7 @@ final class ProductStockNextExtraditionRepository implements ProductStockNextExt
         $dbal
             ->leftJoin(
                 'product_offer_modification',
-                CategoryProductModification::TABLE,
+                CategoryProductModification::class,
                 'category_offer_modification',
                 'category_offer_modification.id = product_offer_modification.category_modification'
             );
@@ -352,11 +339,10 @@ final class ProductStockNextExtraditionRepository implements ProductStockNextExt
             ->addSelect('category_offer_modification_trans.name as product_modification_name')
             ->leftJoin(
                 'category_offer_modification',
-                CategoryProductModificationTrans::TABLE,
+                CategoryProductModificationTrans::class,
                 'category_offer_modification_trans',
                 'category_offer_modification_trans.modification = category_offer_modification.id AND category_offer_modification_trans.local = :local'
             );
-
 
 
         /* Получаем наличие на указанном складе */
@@ -365,7 +351,7 @@ final class ProductStockNextExtraditionRepository implements ProductStockNextExt
             ->addSelect("STRING_AGG(total.storage, ',') AS stock_storage")
             ->leftJoin(
                 'stock_product',
-                ProductStockTotal::TABLE,
+                ProductStockTotal::class,
                 'total',
                 '
                 total.profile = :profile AND

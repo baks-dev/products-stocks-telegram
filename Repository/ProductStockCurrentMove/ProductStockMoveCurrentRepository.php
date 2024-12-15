@@ -172,7 +172,7 @@ final class ProductStockMoveCurrentRepository implements ProductStockMoveCurrent
 
         $dbal->leftJoin(
             'main',
-            ProductStockOrder::TABLE,
+            ProductStockOrder::class,
             'ord',
             'ord.event = main.event'
         );
@@ -214,7 +214,7 @@ final class ProductStockMoveCurrentRepository implements ProductStockMoveCurrent
         $dbal
             ->join(
                 'stock_product',
-                Product::TABLE,
+                Product::class,
                 'product',
                 'product.id = stock_product.product'
             );
@@ -222,7 +222,7 @@ final class ProductStockMoveCurrentRepository implements ProductStockMoveCurrent
         // Product Event
         $dbal->join(
             'product',
-            ProductEvent::TABLE,
+            ProductEvent::class,
             'product_event',
             'product_event.id = product.event'
         );
@@ -231,7 +231,7 @@ final class ProductStockMoveCurrentRepository implements ProductStockMoveCurrent
             ->addSelect('product_trans.name as product_name')
             ->join(
                 'product_event',
-                ProductTrans::TABLE,
+                ProductTrans::class,
                 'product_trans',
                 'product_trans.event = product_event.id AND product_trans.local = :local'
             );
@@ -246,7 +246,7 @@ final class ProductStockMoveCurrentRepository implements ProductStockMoveCurrent
             ->addSelect('product_offer.postfix as product_offer_postfix')
             ->leftJoin(
                 'product_event',
-                ProductOffer::TABLE,
+                ProductOffer::class,
                 'product_offer',
                 'product_offer.event = product_event.id AND product_offer.const = stock_product.offer'
             );
@@ -255,7 +255,7 @@ final class ProductStockMoveCurrentRepository implements ProductStockMoveCurrent
         $dbal
             ->leftJoin(
                 'product_offer',
-                CategoryProductOffers::TABLE,
+                CategoryProductOffers::class,
                 'category_offer',
                 'category_offer.id = product_offer.category_offer'
             );
@@ -264,7 +264,7 @@ final class ProductStockMoveCurrentRepository implements ProductStockMoveCurrent
             ->addSelect('category_offer_trans.name as product_offer_name')
             ->leftJoin(
                 'category_offer',
-                CategoryProductOffersTrans::TABLE,
+                CategoryProductOffersTrans::class,
                 'category_offer_trans',
                 'category_offer_trans.offer = category_offer.id AND category_offer_trans.local = :local'
             );
@@ -279,7 +279,7 @@ final class ProductStockMoveCurrentRepository implements ProductStockMoveCurrent
             ->addSelect('product_offer_variation.postfix as product_variation_postfix')
             ->leftJoin(
                 'product_offer',
-                ProductVariation::TABLE,
+                ProductVariation::class,
                 'product_offer_variation',
                 'product_offer_variation.offer = product_offer.id AND product_offer_variation.const = stock_product.variation'
             );
@@ -288,7 +288,7 @@ final class ProductStockMoveCurrentRepository implements ProductStockMoveCurrent
         $dbal
             ->leftJoin(
                 'product_offer_variation',
-                CategoryProductVariation::TABLE,
+                CategoryProductVariation::class,
                 'category_offer_variation',
                 'category_offer_variation.id = product_offer_variation.category_variation'
             );
@@ -297,7 +297,7 @@ final class ProductStockMoveCurrentRepository implements ProductStockMoveCurrent
             ->addSelect('category_offer_variation_trans.name as product_variation_name')
             ->leftJoin(
                 'category_offer_variation',
-                CategoryProductVariationTrans::TABLE,
+                CategoryProductVariationTrans::class,
                 'category_offer_variation_trans',
                 'category_offer_variation_trans.variation = category_offer_variation.id AND category_offer_variation_trans.local = :local'
             );
@@ -312,7 +312,7 @@ final class ProductStockMoveCurrentRepository implements ProductStockMoveCurrent
             ->addSelect('product_offer_modification.postfix as product_modification_postfix')
             ->leftJoin(
                 'product_offer_variation',
-                ProductModification::TABLE,
+                ProductModification::class,
                 'product_offer_modification',
                 'product_offer_modification.variation = product_offer_variation.id AND product_offer_modification.const = stock_product.modification'
             );
@@ -321,7 +321,7 @@ final class ProductStockMoveCurrentRepository implements ProductStockMoveCurrent
         $dbal
             ->leftJoin(
                 'product_offer_modification',
-                CategoryProductModification::TABLE,
+                CategoryProductModification::class,
                 'category_offer_modification',
                 'category_offer_modification.id = product_offer_modification.category_modification'
             );
@@ -330,7 +330,7 @@ final class ProductStockMoveCurrentRepository implements ProductStockMoveCurrent
             ->addSelect('category_offer_modification_trans.name as product_modification_name')
             ->leftJoin(
                 'category_offer_modification',
-                CategoryProductModificationTrans::TABLE,
+                CategoryProductModificationTrans::class,
                 'category_offer_modification_trans',
                 'category_offer_modification_trans.modification = category_offer_modification.id AND category_offer_modification_trans.local = :local'
             );
@@ -342,7 +342,7 @@ final class ProductStockMoveCurrentRepository implements ProductStockMoveCurrent
         //            ->addSelect("STRING_AGG(total.storage, ',') AS stock_storage")
         //            ->leftJoin(
         //                'stock_product',
-        //                ProductStockTotal::TABLE,
+        //                ProductStockTotal::class,
         //                'total',
         //                '
         //                total.profile = :profile AND
@@ -359,7 +359,7 @@ final class ProductStockMoveCurrentRepository implements ProductStockMoveCurrent
             ->addSelect("STRING_AGG(CONCAT(total.storage, ': [', total.total, ']'), ', ' ORDER BY total.total) AS stock_storage")
             ->leftJoin(
                 'stock_product',
-                ProductStockTotal::TABLE,
+                ProductStockTotal::class,
                 'total',
                 '
                 total.profile = :profile AND
