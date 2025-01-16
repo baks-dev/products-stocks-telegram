@@ -1,6 +1,6 @@
 # BaksDev Product Stocks Telegram
 
-[![Version](https://img.shields.io/badge/version-7.1.10-blue)](https://github.com/baks-dev/products-stocks-telegram/releases)
+[![Version](https://img.shields.io/badge/version-7.1.11-blue)](https://github.com/baks-dev/products-stocks-telegram/releases)
 ![php 8.3+](https://img.shields.io/badge/php-min%208.3-red.svg)
 
 Модуль управления складским учетом продукции с помощью Telegram
