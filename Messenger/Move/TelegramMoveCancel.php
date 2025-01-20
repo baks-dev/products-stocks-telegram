@@ -25,55 +25,30 @@ declare(strict_types=1);
 
 namespace BaksDev\Products\Stocks\Telegram\Messenger\Move;
 
-use BaksDev\Auth\Email\Repository\AccountEventActiveByEmail\AccountEventActiveByEmailInterface;
-use BaksDev\Auth\Email\Type\Email\AccountEmail;
-use BaksDev\Auth\Telegram\Repository\AccountTelegramEvent\AccountTelegramEventInterface;
 use BaksDev\Auth\Telegram\Repository\ActiveProfileByAccountTelegram\ActiveProfileByAccountTelegramInterface;
-use BaksDev\Auth\Telegram\Type\Status\AccountTelegramStatus\Collection\AccountTelegramStatusCollection;
-use BaksDev\Auth\Telegram\UseCase\Admin\NewEdit\AccountTelegramDTO;
-use BaksDev\Auth\Telegram\UseCase\Admin\NewEdit\AccountTelegramHandler;
-use BaksDev\Core\Cache\AppCacheInterface;
-use BaksDev\Manufacture\Part\Telegram\Type\ManufacturePartDone;
 use BaksDev\Products\Stocks\Telegram\Repository\ProductStockFixed\ProductStockFixedInterface;
 use BaksDev\Products\Stocks\Type\Event\ProductStockEventUid;
-use BaksDev\Telegram\Api\TelegramDeleteMessages;
 use BaksDev\Telegram\Api\TelegramSendMessages;
 use BaksDev\Telegram\Bot\Messenger\TelegramEndpointMessage\TelegramEndpointMessage;
-use BaksDev\Telegram\Request\TelegramRequest;
 use BaksDev\Telegram\Request\Type\TelegramRequestCallback;
-use BaksDev\Telegram\Request\Type\TelegramRequestIdentifier;
-use BaksDev\Telegram\Request\Type\TelegramRequestMessage;
 use BaksDev\Users\Profile\UserProfile\Type\Id\UserProfileUid;
 use Psr\Log\LoggerInterface;
+use Symfony\Component\DependencyInjection\Attribute\Target;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
-use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
-use Symfony\Contracts\Cache\CacheInterface;
-use Symfony\Bundle\SecurityBundle\Security;
 
 #[AsMessageHandler]
 final class TelegramMoveCancel
 {
-    public const KEY = 'FZactayP';
-
-    private TelegramSendMessages $telegramSendMessage;
-    private ProductStockFixedInterface $productStockFixed;
-    private LoggerInterface $logger;
-    private ActiveProfileByAccountTelegramInterface $activeProfileByAccountTelegram;
+    public const string KEY = 'FZactayP';
 
     private ?UserProfileUid $profile;
 
     public function __construct(
-        TelegramSendMessages $telegramSendMessage,
-        ProductStockFixedInterface $productStockFixed,
-        LoggerInterface $productsStocksTelegramLogger,
-        ActiveProfileByAccountTelegramInterface $activeProfileByAccountTelegram,
-    )
-    {
-        $this->telegramSendMessage = $telegramSendMessage;
-        $this->productStockFixed = $productStockFixed;
-        $this->logger = $productsStocksTelegramLogger;
-        $this->activeProfileByAccountTelegram = $activeProfileByAccountTelegram;
-    }
+        #[Target('productsStocksTelegramLogger')] private readonly LoggerInterface $logger,
+        private readonly TelegramSendMessages $telegramSendMessage,
+        private readonly ProductStockFixedInterface $productStockFixed,
+        private readonly ActiveProfileByAccountTelegramInterface $activeProfileByAccountTelegram,
+    ) {}
 
 
     public function __invoke(TelegramEndpointMessage $message): void
@@ -113,9 +88,9 @@ final class TelegramMoveCancel
     public function handle(TelegramRequestCallback $TelegramRequest): void
     {
 
-//        /** Отмена фиксации заявки */
-//        ///** @var UserProfileUid $currentUserProfileUid */
-//        //$currentUserProfileUid = $this->security->getUser()?->getProfile();
+        //        /** Отмена фиксации заявки */
+        //        ///** @var UserProfileUid $currentUserProfileUid */
+        //        //$currentUserProfileUid = $this->security->getUser()?->getProfile();
 
         /** Снимаем фиксацию с заявки */
         $ProductStockEventUid = new ProductStockEventUid($TelegramRequest->getIdentifier());

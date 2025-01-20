@@ -28,38 +28,23 @@ namespace BaksDev\Products\Stocks\Telegram\Messenger\Notifier;
 use BaksDev\Auth\Telegram\Repository\AccountTelegramRole\AccountTelegramRoleInterface;
 use BaksDev\Products\Stocks\Messenger\ProductStockMessage;
 use BaksDev\Products\Stocks\Repository\CurrentProductStocks\CurrentProductStocksInterface;
-use BaksDev\Products\Stocks\Type\Status\ProductStockStatus\Collection\ProductStockStatusCollection;
 use BaksDev\Products\Stocks\Type\Status\ProductStockStatus\ProductStockStatusWarehouse;
 use BaksDev\Telegram\Api\TelegramSendMessages;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
+use Symfony\Component\DependencyInjection\Attribute\Target;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 
 #[AsMessageHandler]
-final class TelegramIncomingNew
+final readonly class TelegramIncomingNew
 {
-    private EntityManagerInterface $entityManager;
-    private CurrentProductStocksInterface $currentProductStocks;
-    private AccountTelegramRoleInterface $accountTelegramRole;
-    private TelegramSendMessages $telegramSendMessage;
-    private LoggerInterface $logger;
-
     public function __construct(
-        EntityManagerInterface $entityManager,
-        ProductStockStatusCollection $ProductStockStatusCollection,
-        CurrentProductStocksInterface $currentProductStocks,
-        AccountTelegramRoleInterface $accountTelegramRole,
-        TelegramSendMessages $telegramSendMessage,
-        LoggerInterface $productsStocksTelegramLogger,
-    )
-    {
-        $ProductStockStatusCollection->cases();
-        $this->entityManager = $entityManager;
-        $this->accountTelegramRole = $accountTelegramRole;
-        $this->telegramSendMessage = $telegramSendMessage;
-        $this->currentProductStocks = $currentProductStocks;
-        $this->logger = $productsStocksTelegramLogger;
-    }
+        #[Target('productsStocksTelegramLogger')] private LoggerInterface $logger,
+        private EntityManagerInterface $entityManager,
+        private CurrentProductStocksInterface $currentProductStocks,
+        private AccountTelegramRoleInterface $accountTelegramRole,
+        private TelegramSendMessages $telegramSendMessage,
+    ) {}
 
     /**
      * Посылает уведомление всем пользователям о новом приходе
@@ -76,15 +61,14 @@ final class TelegramIncomingNew
         }
 
         // Если Статус не является Статус Warehouse «Отправлен на склад»
-        if (false === $ProductStockEvent->getStatus()->equals(ProductStockStatusWarehouse::class))
+        if(false === $ProductStockEvent->getStatus()->equals(ProductStockStatusWarehouse::class))
         {
             return;
         }
 
 
         /** Получаем всех Telegram пользователей, имеющих доступ к профилю заявки */
-        $accounts = $this->accountTelegramRole->fetchAll( 'ROLE_PRODUCT_STOCK_INCOMING_ACCEPT', $ProductStockEvent->getProfile());
-
+        $accounts = $this->accountTelegramRole->fetchAll('ROLE_PRODUCT_STOCK_INCOMING_ACCEPT', $ProductStockEvent->getProfile());
 
 
         if(empty($accounts))
@@ -97,10 +81,10 @@ final class TelegramIncomingNew
             'callback_data' => 'telegram-delete-message'
         ];
 
-//        $menu[] = [
-//            'text' => '🔀 Начать сборку',
-//            'callback_data' => TelegramMoveProcess::KEY.'|'.$ProductStockEvent->getProfile()
-//        ];
+        //        $menu[] = [
+        //            'text' => '🔀 Начать сборку',
+        //            'callback_data' => TelegramMoveProcess::KEY.'|'.$ProductStockEvent->getProfile()
+        //        ];
 
         $markup = json_encode([
             'inline_keyboard' => array_chunk($menu, 2),

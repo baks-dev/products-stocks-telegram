@@ -27,82 +27,37 @@ namespace BaksDev\Products\Stocks\Telegram\Messenger\Move;
 
 use App\Kernel;
 use BaksDev\Auth\Telegram\Repository\ActiveProfileByAccountTelegram\ActiveProfileByAccountTelegramInterface;
-use BaksDev\Auth\Telegram\Repository\ActiveUserTelegramAccount\ActiveUserTelegramAccountInterface;
-use BaksDev\Menu\Admin\Repository\MenuAuthority\MenuAuthorityInterface;
-use BaksDev\Products\Stocks\Entity\Stock\Event\ProductStockEvent;
-use BaksDev\Products\Stocks\Entity\Stock\ProductStock;
-use BaksDev\Products\Stocks\Repository\CurrentProductStocks\CurrentProductStocksInterface;
 use BaksDev\Products\Stocks\Telegram\Repository\ProductStockCurrentMove\ProductStockMoveCurrentInterface;
 use BaksDev\Products\Stocks\Telegram\Repository\ProductStockFixed\ProductStockFixedInterface;
-use BaksDev\Products\Stocks\Type\Event\ProductStockEventUid;
 use BaksDev\Products\Stocks\Type\Id\ProductStockUid;
-use BaksDev\Products\Stocks\Type\Status\ProductStockStatus;
-use BaksDev\Products\Stocks\Type\Status\ProductStockStatus\ProductStockStatusMoving;
 use BaksDev\Telegram\Api\TelegramSendMessages;
 use BaksDev\Telegram\Bot\Messenger\TelegramEndpointMessage\TelegramEndpointMessage;
 use BaksDev\Telegram\Bot\Repository\SecurityProfileIsGranted\TelegramSecurityInterface;
-use BaksDev\Telegram\Request\Type\TelegramRequestCallback;
 use BaksDev\Telegram\Request\Type\TelegramRequestIdentifier;
-use BaksDev\Telegram\Request\Type\TelegramRequestQrcode;
-use BaksDev\Users\Profile\UserProfile\Repository\CurrentAllUserProfiles\CurrentAllUserProfilesByUserInterface;
 use BaksDev\Users\Profile\UserProfile\Type\Id\UserProfileUid;
-use BaksDev\Users\User\Type\Id\UserUid;
 use Psr\Log\LoggerInterface;
-use Symfony\Bundle\SecurityBundle\Security;
+use Symfony\Component\DependencyInjection\Attribute\Target;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 
 
 #[AsMessageHandler]
 final class TelegramMoveQrcode
 {
-    public const KEY = 'JYnjKcTgP';
-
-    private ?UserUid $usr = null;
-
-    private TelegramSendMessages $telegramSendMessage;
-    private MenuAuthorityInterface $menuAuthorityRepository;
-    private CurrentAllUserProfilesByUserInterface $currentAllUserProfilesByUser;
-    private LoggerInterface $logger;
-    private ActiveUserTelegramAccountInterface $activeUserTelegramAccount;
-    private ActiveProfileByAccountTelegramInterface $activeProfileByAccountTelegram;
-    private TelegramSecurityInterface $telegramSecurity;
+    public const string KEY = 'JYnjKcTgP';
 
     private ?UserProfileUid $profile;
-    private CurrentProductStocksInterface $currentProductStocks;
-    private ProductStockFixedInterface $productStockFixed;
-    private ProductStockMoveCurrentInterface $productStockMoveCurrent;
 
     private array|bool $stockMoveCurrent;
 
     public function __construct(
-        TelegramSendMessages $telegramSendMessage,
-        MenuAuthorityInterface $menuAuthorityRepository,
-        CurrentAllUserProfilesByUserInterface $currentAllUserProfilesByUser,
-        LoggerInterface $productsStocksTelegramLogger,
-        ActiveUserTelegramAccountInterface $activeUserTelegramAccount,
-        ActiveProfileByAccountTelegramInterface $activeProfileByAccountTelegram,
-        TelegramSecurityInterface $TelegramSecurityInterface,
+        #[Target('productsStocksTelegramLogger')] private readonly LoggerInterface $logger,
+        private readonly TelegramSendMessages $telegramSendMessage,
+        private readonly ActiveProfileByAccountTelegramInterface $activeProfileByAccountTelegram,
+        private readonly ProductStockFixedInterface $productStockFixed,
+        private readonly ProductStockMoveCurrentInterface $productStockMoveCurrent,
+        private readonly TelegramSecurityInterface $telegramSecurity,
 
-
-        CurrentProductStocksInterface $currentProductStocks,
-        ProductStockFixedInterface $productStockFixed,
-        ProductStockMoveCurrentInterface $productStockMoveCurrent
-
-    )
-    {
-        $this->telegramSendMessage = $telegramSendMessage;
-        $this->menuAuthorityRepository = $menuAuthorityRepository;
-        $this->currentAllUserProfilesByUser = $currentAllUserProfilesByUser;
-        $this->logger = $productsStocksTelegramLogger;
-        $this->activeUserTelegramAccount = $activeUserTelegramAccount;
-        $this->activeProfileByAccountTelegram = $activeProfileByAccountTelegram;
-        $this->telegramSecurity = $TelegramSecurityInterface;
-
-
-        $this->currentProductStocks = $currentProductStocks;
-        $this->productStockFixed = $productStockFixed;
-        $this->productStockMoveCurrent = $productStockMoveCurrent;
-    }
+    ) {}
 
     public function __invoke(TelegramEndpointMessage $message): void
     {
@@ -223,7 +178,7 @@ final class TelegramMoveQrcode
 
             $markup = json_encode([
                 'inline_keyboard' => array_chunk($menu, 2),
-            ]);
+            ], JSON_THROW_ON_ERROR);
         }
         else
         {

@@ -26,80 +26,44 @@ declare(strict_types=1);
 namespace BaksDev\Products\Stocks\Telegram\Messenger\Move;
 
 use App\Kernel;
-use BaksDev\Auth\Email\Repository\AccountEventActiveByEmail\AccountEventActiveByEmailInterface;
-use BaksDev\Auth\Email\Type\Email\AccountEmail;
-use BaksDev\Auth\Telegram\Repository\AccountTelegramEvent\AccountTelegramEventInterface;
 use BaksDev\Auth\Telegram\Repository\ActiveProfileByAccountTelegram\ActiveProfileByAccountTelegramInterface;
-use BaksDev\Auth\Telegram\Type\Status\AccountTelegramStatus\Collection\AccountTelegramStatusCollection;
-use BaksDev\Auth\Telegram\UseCase\Admin\NewEdit\AccountTelegramDTO;
-use BaksDev\Auth\Telegram\UseCase\Admin\NewEdit\AccountTelegramHandler;
-use BaksDev\Core\Cache\AppCacheInterface;
 use BaksDev\Core\Doctrine\ORMQueryBuilder;
-use BaksDev\Manufacture\Part\Telegram\Type\ManufacturePartDone;
 use BaksDev\Products\Stocks\Entity\Stock\Event\ProductStockEvent;
 use BaksDev\Products\Stocks\Entity\Stock\ProductStock;
 use BaksDev\Products\Stocks\Telegram\Repository\ProductStockFixed\ProductStockFixedInterface;
 use BaksDev\Products\Stocks\Type\Event\ProductStockEventUid;
-use BaksDev\Products\Stocks\Type\Id\ProductStockUid;
 use BaksDev\Products\Stocks\Type\Status\ProductStockStatus;
 use BaksDev\Products\Stocks\Type\Status\ProductStockStatus\ProductStockStatusMoving;
-use BaksDev\Products\Stocks\UseCase\Admin\Extradition\ExtraditionProductStockDTO;
-use BaksDev\Products\Stocks\UseCase\Admin\Extradition\ExtraditionProductStockHandler;
-use BaksDev\Products\Stocks\UseCase\Admin\Moving\MovingProductStockHandler;
 use BaksDev\Products\Stocks\UseCase\Admin\Warehouse\WarehouseProductStockDTO;
 use BaksDev\Products\Stocks\UseCase\Admin\Warehouse\WarehouseProductStockHandler;
-use BaksDev\Telegram\Api\TelegramDeleteMessages;
 use BaksDev\Telegram\Api\TelegramSendMessages;
 use BaksDev\Telegram\Bot\Messenger\TelegramEndpointMessage\TelegramEndpointMessage;
 use BaksDev\Telegram\Bot\Repository\SecurityProfileIsGranted\TelegramSecurityInterface;
-use BaksDev\Telegram\Request\TelegramRequest;
 use BaksDev\Telegram\Request\Type\TelegramRequestCallback;
-use BaksDev\Telegram\Request\Type\TelegramRequestIdentifier;
-use BaksDev\Telegram\Request\Type\TelegramRequestMessage;
 use BaksDev\Users\Profile\UserProfile\Type\Id\UserProfileUid;
 use BaksDev\Users\User\Type\Id\UserUid;
 use DateTimeImmutable;
 use Psr\Log\LoggerInterface;
+use Symfony\Component\DependencyInjection\Attribute\Target;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
-use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
-use Symfony\Contracts\Cache\CacheInterface;
-use Symfony\Bundle\SecurityBundle\Security;
 
 #[AsMessageHandler]
 final class TelegramMoveDone
 {
-    public const KEY = 'pVPMFRhw';
+    public const string KEY = 'pVPMFRhw';
 
-    private TelegramSendMessages $telegramSendMessage;
-    private ProductStockFixedInterface $productStockFixed;
-    private TelegramMoveProcess $moveProcess;
-    private ORMQueryBuilder $ORMQueryBuilder;
-    private LoggerInterface $logger;
-    private ActiveProfileByAccountTelegramInterface $activeProfileByAccountTelegram;
     private ?UserProfileUid $profile;
-    private WarehouseProductStockHandler $warehouseProductStockHandler;
-    private TelegramSecurityInterface $telegramSecurity;
 
     public function __construct(
-        ORMQueryBuilder $ORMQueryBuilder,
-        TelegramSendMessages $telegramSendMessage,
-        TelegramMoveProcess $moveProcess,
-        LoggerInterface $productsStocksTelegramLogger,
-        ActiveProfileByAccountTelegramInterface $activeProfileByAccountTelegram,
-        WarehouseProductStockHandler $warehouseProductStockHandler,
-        TelegramSecurityInterface $telegramSecurity,
-        ProductStockFixedInterface $productStockFixed,
-    )
-    {
-        $this->telegramSendMessage = $telegramSendMessage;
-        $this->moveProcess = $moveProcess;
-        $this->ORMQueryBuilder = $ORMQueryBuilder;
-        $this->logger = $productsStocksTelegramLogger;
-        $this->activeProfileByAccountTelegram = $activeProfileByAccountTelegram;
-        $this->warehouseProductStockHandler = $warehouseProductStockHandler;
-        $this->telegramSecurity = $telegramSecurity;
-        $this->productStockFixed = $productStockFixed;
-    }
+        #[Target('productsStocksTelegramLogger')] private readonly LoggerInterface $logger,
+        private readonly ORMQueryBuilder $ORMQueryBuilder,
+        private readonly TelegramSendMessages $telegramSendMessage,
+        private readonly TelegramMoveProcess $moveProcess,
+        private readonly ActiveProfileByAccountTelegramInterface $activeProfileByAccountTelegram,
+        private readonly WarehouseProductStockHandler $warehouseProductStockHandler,
+        private readonly TelegramSecurityInterface $telegramSecurity,
+        private readonly ProductStockFixedInterface $productStockFixed,
+    ) {}
 
     public function __invoke(TelegramEndpointMessage $message): void
     {

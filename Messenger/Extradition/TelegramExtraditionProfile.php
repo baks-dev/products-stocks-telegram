@@ -28,7 +28,6 @@ namespace BaksDev\Products\Stocks\Telegram\Messenger\Extradition;
 use BaksDev\Auth\Telegram\Repository\ActiveProfileByAccountTelegram\ActiveProfileByAccountTelegramInterface;
 use BaksDev\Auth\Telegram\Repository\ActiveUserTelegramAccount\ActiveUserTelegramAccountInterface;
 use BaksDev\Menu\Admin\Repository\MenuAuthority\MenuAuthorityInterface;
-use BaksDev\Products\Stocks\Telegram\Messenger\Move\TelegramMoveProcess;
 use BaksDev\Telegram\Api\TelegramSendMessages;
 use BaksDev\Telegram\Bot\Messenger\TelegramEndpointMessage\TelegramEndpointMessage;
 use BaksDev\Telegram\Bot\Repository\SecurityProfileIsGranted\TelegramSecurityInterface;
@@ -36,45 +35,26 @@ use BaksDev\Telegram\Request\Type\TelegramRequestCallback;
 use BaksDev\Users\Profile\UserProfile\Repository\CurrentAllUserProfiles\CurrentAllUserProfilesByUserInterface;
 use BaksDev\Users\User\Type\Id\UserUid;
 use Psr\Log\LoggerInterface;
-use Symfony\Bundle\SecurityBundle\Security;
+use Symfony\Component\DependencyInjection\Attribute\Target;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 
 
 #[AsMessageHandler]
 final class TelegramExtraditionProfile
 {
-    public const KEY = 'mKMnjAwMMk';
+    public const string KEY = 'mKMnjAwMMk';
 
     private ?UserUid $usr;
 
-    private TelegramSendMessages $telegramSendMessage;
-    private MenuAuthorityInterface $menuAuthorityRepository;
-    private CurrentAllUserProfilesByUserInterface $currentAllUserProfilesByUser;
-    private LoggerInterface $logger;
-    private TelegramSecurityInterface $TelegramSecurity;
-    private ActiveUserTelegramAccountInterface $activeUserTelegramAccount;
-    private ActiveProfileByAccountTelegramInterface $activeProfileByAccountTelegram;
-
-
     public function __construct(
-
-        TelegramSendMessages $telegramSendMessage,
-        MenuAuthorityInterface $menuAuthorityRepository,
-        CurrentAllUserProfilesByUserInterface $currentAllUserProfilesByUser,
-        LoggerInterface $productsStocksTelegramLogger,
-        ActiveUserTelegramAccountInterface $activeUserTelegramAccount,
-        TelegramSecurityInterface $TelegramSecurity,
-        ActiveProfileByAccountTelegramInterface $activeProfileByAccountTelegram,
-    )
-    {
-        $this->telegramSendMessage = $telegramSendMessage;
-        $this->menuAuthorityRepository = $menuAuthorityRepository;
-        $this->currentAllUserProfilesByUser = $currentAllUserProfilesByUser;
-        $this->logger = $productsStocksTelegramLogger;
-        $this->TelegramSecurity = $TelegramSecurity;
-        $this->activeUserTelegramAccount = $activeUserTelegramAccount;
-        $this->activeProfileByAccountTelegram = $activeProfileByAccountTelegram;
-    }
+        #[Target('productsStocksTelegramLogger')] private readonly LoggerInterface $logger,
+        private readonly TelegramSendMessages $telegramSendMessage,
+        private readonly MenuAuthorityInterface $menuAuthorityRepository,
+        private readonly CurrentAllUserProfilesByUserInterface $currentAllUserProfilesByUser,
+        private readonly ActiveUserTelegramAccountInterface $activeUserTelegramAccount,
+        private readonly TelegramSecurityInterface $TelegramSecurity,
+        private readonly ActiveProfileByAccountTelegramInterface $activeProfileByAccountTelegram,
+    ) {}
 
     public function __invoke(TelegramEndpointMessage $message): void
     {
@@ -129,7 +109,6 @@ final class TelegramExtraditionProfile
         }
 
 
-
         /**
          * Получаем профили доверенностей
          */
@@ -149,14 +128,13 @@ final class TelegramExtraditionProfile
         }
 
 
-
         $markup = null;
 
         if(!empty($menu))
         {
             $markup = json_encode([
                 'inline_keyboard' => array_chunk($menu, 1),
-            ]);
+            ], JSON_THROW_ON_ERROR);
         }
 
         $msg = '<b>Выберите профиль пользователя для сборки заказов:</b>';

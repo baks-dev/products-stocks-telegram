@@ -29,38 +29,23 @@ use BaksDev\Auth\Telegram\Repository\AccountTelegramRole\AccountTelegramRoleInte
 use BaksDev\Products\Stocks\Messenger\ProductStockMessage;
 use BaksDev\Products\Stocks\Repository\CurrentProductStocks\CurrentProductStocksInterface;
 use BaksDev\Products\Stocks\Telegram\Messenger\Move\TelegramMoveProcess;
-use BaksDev\Products\Stocks\Type\Status\ProductStockStatus\Collection\ProductStockStatusCollection;
 use BaksDev\Products\Stocks\Type\Status\ProductStockStatus\ProductStockStatusMoving;
 use BaksDev\Telegram\Api\TelegramSendMessages;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
+use Symfony\Component\DependencyInjection\Attribute\Target;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 
 #[AsMessageHandler]
-final class TelegramMoveNew
+final readonly class TelegramMoveNew
 {
-    private EntityManagerInterface $entityManager;
-    private CurrentProductStocksInterface $currentProductStocks;
-    private AccountTelegramRoleInterface $accountTelegramRole;
-    private TelegramSendMessages $telegramSendMessage;
-    private LoggerInterface $logger;
-
     public function __construct(
-        EntityManagerInterface $entityManager,
-        ProductStockStatusCollection $ProductStockStatusCollection,
-        CurrentProductStocksInterface $currentProductStocks,
-        AccountTelegramRoleInterface $accountTelegramRole,
-        TelegramSendMessages $telegramSendMessage,
-        LoggerInterface $productsStocksTelegramLogger,
-    )
-    {
-        $ProductStockStatusCollection->cases();
-        $this->entityManager = $entityManager;
-        $this->accountTelegramRole = $accountTelegramRole;
-        $this->telegramSendMessage = $telegramSendMessage;
-        $this->currentProductStocks = $currentProductStocks;
-        $this->logger = $productsStocksTelegramLogger;
-    }
+        #[Target('productsStocksTelegramLogger')] private LoggerInterface $logger,
+        private EntityManagerInterface $entityManager,
+        private CurrentProductStocksInterface $currentProductStocks,
+        private AccountTelegramRoleInterface $accountTelegramRole,
+        private TelegramSendMessages $telegramSendMessage,
+    ) {}
 
     /**
      * Посылает уведомление всем пользователям о новом заказе на упаковке
@@ -77,7 +62,7 @@ final class TelegramMoveNew
         }
 
         // Если Статус не является Статус Moving «Перемещение»
-        if (false === $ProductStockEvent->getStatus()->equals(ProductStockStatusMoving::class))
+        if(false === $ProductStockEvent->getStatus()->equals(ProductStockStatusMoving::class))
         {
             return;
         }
@@ -85,7 +70,7 @@ final class TelegramMoveNew
         $this->logger->info(sprintf('Профиль перемещения %s', $ProductStockEvent->getProfile()));
 
         /** Получаем всех Telegram пользователей, имеющих доступ к профилю заявки */
-        $accounts = $this->accountTelegramRole->fetchAll( 'ROLE_PRODUCT_STOCK_WAREHOUSE_SEND', $ProductStockEvent->getProfile());
+        $accounts = $this->accountTelegramRole->fetchAll('ROLE_PRODUCT_STOCK_WAREHOUSE_SEND', $ProductStockEvent->getProfile());
 
         if(empty($accounts))
         {

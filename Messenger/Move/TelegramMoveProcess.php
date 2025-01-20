@@ -32,36 +32,22 @@ use BaksDev\Products\Stocks\Type\Event\ProductStockEventUid;
 use BaksDev\Telegram\Api\TelegramSendMessages;
 use BaksDev\Telegram\Bot\Messenger\TelegramEndpointMessage\TelegramEndpointMessage;
 use BaksDev\Telegram\Request\Type\TelegramRequestCallback;
-use BaksDev\Users\Profile\UserProfile\Type\Id\UserProfileUid;
 use Psr\Log\LoggerInterface;
-use Symfony\Bundle\SecurityBundle\Security;
+use Symfony\Component\DependencyInjection\Attribute\Target;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 
 #[AsMessageHandler]
 final class TelegramMoveProcess
 {
-    public const KEY = 'GBMaWSqVN';
-
-    private TelegramSendMessages $telegramSendMessage;
-    private ProductStockFixedInterface $productStockFixed;
-    private ProductStockMoveNextInterface $ProductStockMoveNext;
-    private LoggerInterface $logger;
-    private ActiveProfileByAccountTelegramInterface $activeProfileByAccountTelegram;
+    public const string KEY = 'GBMaWSqVN';
 
     public function __construct(
-        TelegramSendMessages $telegramSendMessage,
-        ProductStockFixedInterface $productStockFixed,
-        ProductStockMoveNextInterface $ProductStockMoveNext,
-        LoggerInterface $productsStocksTelegramLogger,
-        ActiveProfileByAccountTelegramInterface $activeProfileByAccountTelegram
-    )
-    {
-        $this->telegramSendMessage = $telegramSendMessage;
-        $this->productStockFixed = $productStockFixed;
-        $this->ProductStockMoveNext = $ProductStockMoveNext;
-        $this->logger = $productsStocksTelegramLogger;
-        $this->activeProfileByAccountTelegram = $activeProfileByAccountTelegram;
-    }
+        #[Target('productsStocksTelegramLogger')] private readonly LoggerInterface $logger,
+        private readonly TelegramSendMessages $telegramSendMessage,
+        private readonly ProductStockFixedInterface $productStockFixed,
+        private readonly ProductStockMoveNextInterface $ProductStockMoveNext,
+        private readonly ActiveProfileByAccountTelegramInterface $activeProfileByAccountTelegram
+    ) {}
 
     public function __invoke(TelegramEndpointMessage $message): void
     {

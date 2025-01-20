@@ -36,43 +36,26 @@ use BaksDev\Telegram\Request\Type\TelegramRequestCallback;
 use BaksDev\Users\Profile\UserProfile\Repository\CurrentAllUserProfiles\CurrentAllUserProfilesByUserInterface;
 use BaksDev\Users\User\Type\Id\UserUid;
 use Psr\Log\LoggerInterface;
-use Symfony\Bundle\SecurityBundle\Security;
+use Symfony\Component\DependencyInjection\Attribute\Target;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 
 
 #[AsMessageHandler]
 final class TelegramMoveProfile
 {
-    public const KEY = 'JYnjKcTgP';
+    public const string KEY = 'JYnjKcTgP';
 
     private ?UserUid $usr = null;
 
-    private TelegramSendMessages $telegramSendMessage;
-    private MenuAuthorityInterface $menuAuthorityRepository;
-    private CurrentAllUserProfilesByUserInterface $currentAllUserProfilesByUser;
-    private LoggerInterface $logger;
-    private ActiveUserTelegramAccountInterface $activeUserTelegramAccount;
-    private ActiveProfileByAccountTelegramInterface $activeProfileByAccountTelegram;
-    private TelegramSecurityInterface $telegramSecurity;
-
     public function __construct(
-        TelegramSendMessages $telegramSendMessage,
-        MenuAuthorityInterface $menuAuthorityRepository,
-        CurrentAllUserProfilesByUserInterface $currentAllUserProfilesByUser,
-        LoggerInterface $productsStocksTelegramLogger,
-        ActiveUserTelegramAccountInterface $activeUserTelegramAccount,
-        ActiveProfileByAccountTelegramInterface $activeProfileByAccountTelegram,
-        TelegramSecurityInterface $TelegramSecurityInterface
-    )
-    {
-        $this->telegramSendMessage = $telegramSendMessage;
-        $this->menuAuthorityRepository = $menuAuthorityRepository;
-        $this->currentAllUserProfilesByUser = $currentAllUserProfilesByUser;
-        $this->logger = $productsStocksTelegramLogger;
-        $this->activeUserTelegramAccount = $activeUserTelegramAccount;
-        $this->activeProfileByAccountTelegram = $activeProfileByAccountTelegram;
-        $this->telegramSecurity = $TelegramSecurityInterface;
-    }
+        #[Target('productsStocksTelegramLogger')] private readonly LoggerInterface $logger,
+        private readonly TelegramSendMessages $telegramSendMessage,
+        private readonly MenuAuthorityInterface $menuAuthorityRepository,
+        private readonly CurrentAllUserProfilesByUserInterface $currentAllUserProfilesByUser,
+        private readonly ActiveUserTelegramAccountInterface $activeUserTelegramAccount,
+        private readonly ActiveProfileByAccountTelegramInterface $activeProfileByAccountTelegram,
+        private readonly TelegramSecurityInterface $telegramSecurity
+    ) {}
 
     public function __invoke(TelegramEndpointMessage $message): void
     {

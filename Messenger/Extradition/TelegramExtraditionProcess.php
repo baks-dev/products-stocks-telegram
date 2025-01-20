@@ -33,36 +33,21 @@ use BaksDev\Telegram\Api\TelegramSendMessages;
 use BaksDev\Telegram\Bot\Messenger\TelegramEndpointMessage\TelegramEndpointMessage;
 use BaksDev\Telegram\Request\Type\TelegramRequestCallback;
 use Psr\Log\LoggerInterface;
+use Symfony\Component\DependencyInjection\Attribute\Target;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 
 #[AsMessageHandler]
 final class TelegramExtraditionProcess
 {
-    public const KEY = 'eKzkUvKQq';
-
-    private TelegramSendMessages $telegramSendMessage;
-
-    private ProductStockFixedInterface $productStockFixed;
-    private ProductStockNextExtraditionInterface $productStockNextExtradition;
-    private LoggerInterface $logger;
-    private ActiveProfileByAccountTelegramInterface $activeProfileByAccountTelegram;
+    public const string KEY = 'eKzkUvKQq';
 
     public function __construct(
-
-        TelegramSendMessages $telegramSendMessage,
-        ProductStockFixedInterface $productStockFixed,
-        ProductStockNextExtraditionInterface $productStockNextExtradition,
-        LoggerInterface $productsStocksTelegramLogger,
-        ActiveProfileByAccountTelegramInterface $activeProfileByAccountTelegram,
-    )
-    {
-
-        $this->telegramSendMessage = $telegramSendMessage;
-        $this->productStockFixed = $productStockFixed;
-        $this->productStockNextExtradition = $productStockNextExtradition;
-        $this->logger = $productsStocksTelegramLogger;
-        $this->activeProfileByAccountTelegram = $activeProfileByAccountTelegram;
-    }
+        #[Target('productsStocksTelegramLogger')] private readonly LoggerInterface $logger,
+        private readonly TelegramSendMessages $telegramSendMessage,
+        private readonly ProductStockFixedInterface $productStockFixed,
+        private readonly ProductStockNextExtraditionInterface $productStockNextExtradition,
+        private readonly ActiveProfileByAccountTelegramInterface $activeProfileByAccountTelegram,
+    ) {}
 
     public function __invoke(TelegramEndpointMessage $message): void
     {
@@ -174,20 +159,20 @@ final class TelegramExtraditionProcess
             $msg .= PHP_EOL;
 
             $msg .= sprintf('<b>%s</b> %s: <b>%s</b> %s: <b>%s</b> %s: <b>%s</b> %s',
-                $product['product_name'],
+                    $product['product_name'],
 
-                $product['product_variation_name'],
-                $product['product_variation_value'],
+                    $product['product_variation_name'],
+                    $product['product_variation_value'],
 
-                $product['product_modification_name'],
-                $product['product_modification_value'],
+                    $product['product_modification_name'],
+                    $product['product_modification_value'],
 
-                $product['product_offer_name'],
-                $product['product_offer_value'],
+                    $product['product_offer_name'],
+                    $product['product_offer_value'],
 
-                trim($product['product_offer_postfix'].' '.$product['product_variation_postfix'].' '.$product['product_modification_postfix']),
+                    trim($product['product_offer_postfix'].' '.$product['product_variation_postfix'].' '.$product['product_modification_postfix']),
 
-            ).PHP_EOL;
+                ).PHP_EOL;
 
 
             $msg .= sprintf('Количество: <b>%s шт.</b>', $product['product_total']).PHP_EOL;
