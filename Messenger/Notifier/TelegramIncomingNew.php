@@ -68,7 +68,7 @@ final readonly class TelegramIncomingNew
 
 
         /** Получаем всех Telegram пользователей, имеющих доступ к профилю заявки */
-        $accounts = $this->accountTelegramRole->fetchAll('ROLE_PRODUCT_STOCK_INCOMING_ACCEPT', $ProductStockEvent->getProfile());
+        $accounts = $this->accountTelegramRole->fetchAll('ROLE_PRODUCT_STOCK_INCOMING_ACCEPT', $ProductStockEvent->getStocksProfile());
 
 
         if(empty($accounts))
