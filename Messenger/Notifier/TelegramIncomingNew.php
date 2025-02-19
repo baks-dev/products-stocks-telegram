@@ -35,7 +35,10 @@ use Psr\Log\LoggerInterface;
 use Symfony\Component\DependencyInjection\Attribute\Target;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 
-#[AsMessageHandler]
+/**
+ * Посылает уведомление всем пользователям о новом приходе
+ */
+#[AsMessageHandler(priority: -100)]
 final readonly class TelegramIncomingNew
 {
     public function __construct(
@@ -46,9 +49,6 @@ final readonly class TelegramIncomingNew
         private TelegramSendMessages $telegramSendMessage,
     ) {}
 
-    /**
-     * Посылает уведомление всем пользователям о новом приходе
-     */
     public function __invoke(ProductStockMessage $message): void
     {
         $this->entityManager->clear();
