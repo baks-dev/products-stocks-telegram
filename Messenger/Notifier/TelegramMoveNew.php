@@ -26,6 +26,7 @@ declare(strict_types=1);
 namespace BaksDev\Products\Stocks\Telegram\Messenger\Notifier;
 
 use BaksDev\Auth\Telegram\Repository\AccountTelegramRole\AccountTelegramRoleInterface;
+use BaksDev\Products\Stocks\Entity\Stock\Event\ProductStockEvent;
 use BaksDev\Products\Stocks\Messenger\ProductStockMessage;
 use BaksDev\Products\Stocks\Repository\CurrentProductStocks\CurrentProductStocksInterface;
 use BaksDev\Products\Stocks\Telegram\Messenger\Move\TelegramMoveProcess;
@@ -44,7 +45,6 @@ final readonly class TelegramMoveNew
 {
     public function __construct(
         #[Target('productsStocksTelegramLogger')] private LoggerInterface $logger,
-        private EntityManagerInterface $entityManager,
         private CurrentProductStocksInterface $currentProductStocks,
         private AccountTelegramRoleInterface $accountTelegramRole,
         private TelegramSendMessages $telegramSendMessage,
@@ -53,25 +53,24 @@ final readonly class TelegramMoveNew
 
     public function __invoke(ProductStockMessage $message): void
     {
-        $this->entityManager->clear();
+        $CurrentProductStockEvent = $this->currentProductStocks
+            ->getCurrentEvent($message->getId());
 
-        $ProductStockEvent = $this->currentProductStocks->getCurrentEvent($message->getId());
-
-        if(!$ProductStockEvent)
+        if(false === ($CurrentProductStockEvent instanceof ProductStockEvent))
         {
             return;
         }
 
         // Если Статус не является Статус Moving «Перемещение»
-        if(false === $ProductStockEvent->getStatus()->equals(ProductStockStatusMoving::class))
+        if(false === $CurrentProductStockEvent->equalsProductStockStatus(ProductStockStatusMoving::class))
         {
             return;
         }
 
-        $this->logger->info(sprintf('Профиль перемещения %s', $ProductStockEvent->getStocksProfile()));
+        $this->logger->info(sprintf('Профиль перемещения %s', $CurrentProductStockEvent->getStocksProfile()));
 
         /** Получаем всех Telegram пользователей, имеющих доступ к профилю заявки */
-        $accounts = $this->accountTelegramRole->fetchAll('ROLE_PRODUCT_STOCK_WAREHOUSE_SEND', $ProductStockEvent->getStocksProfile());
+        $accounts = $this->accountTelegramRole->fetchAll('ROLE_PRODUCT_STOCK_WAREHOUSE_SEND', $CurrentProductStockEvent->getStocksProfile());
 
         if(empty($accounts))
         {
@@ -85,7 +84,7 @@ final readonly class TelegramMoveNew
 
         $menu[] = [
             'text' => '🔀 Начать сборку',
-            'callback_data' => TelegramMoveProcess::KEY.'|'.$ProductStockEvent->getStocksProfile()
+            'callback_data' => TelegramMoveProcess::KEY.'|'.$CurrentProductStockEvent->getStocksProfile()
         ];
 
         $markup = json_encode([
@@ -93,7 +92,7 @@ final readonly class TelegramMoveNew
         ], JSON_THROW_ON_ERROR);
 
         $msg = '🔀 <b>Поступила заявка на перемещение</b>'.PHP_EOL;
-        $msg .= sprintf('Номер: <b>%s</b>', $ProductStockEvent->getNumber()).PHP_EOL;
+        $msg .= sprintf('Номер: <b>%s</b>', $CurrentProductStockEvent->getNumber()).PHP_EOL;
 
         foreach($accounts as $account)
         {
