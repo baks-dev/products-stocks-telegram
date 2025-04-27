@@ -211,17 +211,30 @@ final class TelegramExtraditionDone
         /** @var ProductStockEvent $ProductStockEvent */
         $orm
             ->select('event')
-            ->from(ProductStockEvent::class, 'event')
+            ->from(ProductStockEvent::class, 'event');
+
+        $orm
             ->where('event.id = :event')
-            ->setParameter('event', $ProductStockEventUid, ProductStockEventUid::TYPE)
-            ->andWhere('event.status = :status')
-            ->setParameter('status', new ProductStockStatus(ProductStockStatusPackage::class), ProductStockStatus::TYPE)
-            ->join(
-                ProductStock::class,
-                'stock',
-                'WITH',
-                'stock.event = event.id'
+            ->setParameter(
+                key: 'event',
+                value: $ProductStockEventUid,
+                type: ProductStockEventUid::TYPE
             );
+
+        $orm
+            ->andWhere('event.status = :status')
+            ->setParameter(
+                key: 'status',
+                value: new ProductStockStatus(ProductStockStatusPackage::class),
+                type: ProductStockStatus::TYPE
+            );
+
+        $orm->join(
+            ProductStock::class,
+            'stock',
+            'WITH',
+            'stock.event = event.id'
+        );
 
         return $orm->getOneOrNullResult();
     }
