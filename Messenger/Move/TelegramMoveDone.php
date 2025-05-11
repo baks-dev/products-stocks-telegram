@@ -113,7 +113,9 @@ final class TelegramMoveDone
             return;
         }
 
-        if(!$this->telegramSecurity->isGranted($this->profile, 'ROLE_PRODUCT_STOCK_WAREHOUSE_SEND', $ProductStockEvent->getStocksProfile()))
+        $UserProfileUid = $ProductStockEvent->getInvariable()?->getProfile();
+
+        if(!$this->telegramSecurity->isGranted($this->profile, 'ROLE_PRODUCT_STOCK_WAREHOUSE_SEND', $UserProfileUid))
         {
 
             $menu[] = [
@@ -161,7 +163,7 @@ final class TelegramMoveDone
 
             /** Перелинкуем профили */
             $WarehouseProductStockDTO->setProfile($ProductStockEvent->getMoveDestination());
-            $WarehouseProductStockDTO->getMove()?->setDestination($ProductStockEvent->getStocksProfile());
+            $WarehouseProductStockDTO->getMove()?->setDestination($ProductStockEvent->getInvariable()->getProfile());
 
             $ProductStock = $this->warehouseProductStockHandler->handle($WarehouseProductStockDTO);
 

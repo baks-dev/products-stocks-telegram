@@ -110,7 +110,9 @@ final class TelegramExtraditionDone
             return;
         }
 
-        if(!$this->TelegramSecurity->isGranted($this->profile, 'ROLE_PRODUCT_STOCK_PACKAGE', $ProductStockEvent->getStocksProfile()))
+        $UserProfileUid = $ProductStockEvent->getInvariable()?->getProfile();
+
+        if(!$this->TelegramSecurity->isGranted($this->profile, 'ROLE_PRODUCT_STOCK_PACKAGE', $UserProfileUid))
         {
 
             $menu[] = [

@@ -67,10 +67,12 @@ final readonly class TelegramMoveNew
             return;
         }
 
-        $this->logger->info(sprintf('Профиль перемещения %s', $CurrentProductStockEvent->getStocksProfile()));
+        $UserProfileUid = $CurrentProductStockEvent->getInvariable()?->getProfile();
+
+        $this->logger->info(sprintf('Профиль перемещения %s', $UserProfileUid));
 
         /** Получаем всех Telegram пользователей, имеющих доступ к профилю заявки */
-        $accounts = $this->accountTelegramRole->fetchAll('ROLE_PRODUCT_STOCK_WAREHOUSE_SEND', $CurrentProductStockEvent->getStocksProfile());
+        $accounts = $this->accountTelegramRole->fetchAll('ROLE_PRODUCT_STOCK_WAREHOUSE_SEND', $UserProfileUid);
 
         if(empty($accounts))
         {
@@ -84,7 +86,7 @@ final readonly class TelegramMoveNew
 
         $menu[] = [
             'text' => '🔀 Начать сборку',
-            'callback_data' => TelegramMoveProcess::KEY.'|'.$CurrentProductStockEvent->getStocksProfile()
+            'callback_data' => TelegramMoveProcess::KEY.'|'.$UserProfileUid
         ];
 
         $markup = json_encode([

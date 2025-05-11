@@ -61,15 +61,15 @@ final readonly class TelegramIncomingNew
         }
 
         // Если Статус не является Статус Warehouse «Отправлен на склад»
-        if(false === $ProductStockEvent->getStatus()->equals(ProductStockStatusWarehouse::class))
+        if(false === $ProductStockEvent->equalsProductStockStatus(ProductStockStatusWarehouse::class))
         {
             return;
         }
 
+        $UserProfileUid = $ProductStockEvent->getInvariable()?->getProfile();
 
         /** Получаем всех Telegram пользователей, имеющих доступ к профилю заявки */
-        $accounts = $this->accountTelegramRole->fetchAll('ROLE_PRODUCT_STOCK_INCOMING_ACCEPT', $ProductStockEvent->getStocksProfile());
-
+        $accounts = $this->accountTelegramRole->fetchAll('ROLE_PRODUCT_STOCK_INCOMING_ACCEPT', $UserProfileUid);
 
         if(empty($accounts))
         {
