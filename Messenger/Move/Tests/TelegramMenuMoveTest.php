@@ -44,15 +44,13 @@ use BaksDev\Wildberries\Products\UseCase\Barcode\NewEdit\Property\WbBarcodePrope
 use BaksDev\Wildberries\Products\UseCase\Barcode\NewEdit\WbBarcodeDTO;
 use BaksDev\Wildberries\Products\UseCase\Barcode\NewEdit\WbBarcodeHandler;
 use Doctrine\ORM\EntityManagerInterface;
+use PHPUnit\Framework\Attributes\Group;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\DependencyInjection\Attribute\When;
 use Symfony\Component\HttpFoundation\Request;
 
-/**
- * @group products-stocks-telegram
- * @group products-stocks-telegram-move
- */
 #[When(env: 'test')]
+#[Group('products-stocks-telegram')]
 final class TelegramMenuMoveTest extends KernelTestCase
 {
     private static ?string $chat = null;

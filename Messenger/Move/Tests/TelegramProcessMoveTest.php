@@ -31,9 +31,7 @@ use BaksDev\Core\Doctrine\DBALQueryBuilder;
 use BaksDev\Core\Messenger\MessageDispatchInterface;
 use BaksDev\Products\Category\Type\Id\CategoryProductUid;
 use BaksDev\Products\Category\Type\Section\Field\Id\CategoryProductSectionFieldUid;
-use BaksDev\Products\Stocks\Telegram\Messenger\Move\TelegramMoveMenu;
 use BaksDev\Products\Stocks\Telegram\Messenger\Move\TelegramMoveProcess;
-use BaksDev\Products\Stocks\Telegram\Messenger\Move\TelegramMoveProfile;
 use BaksDev\Telegram\Api\TelegramSendMessages;
 use BaksDev\Telegram\Bot\Messenger\TelegramEndpointMessage\TelegramEndpointMessage;
 use BaksDev\Telegram\Bot\Repository\UsersTableTelegramSettings\TelegramBotSettingsInterface;
@@ -46,15 +44,13 @@ use BaksDev\Wildberries\Products\UseCase\Barcode\NewEdit\Property\WbBarcodePrope
 use BaksDev\Wildberries\Products\UseCase\Barcode\NewEdit\WbBarcodeDTO;
 use BaksDev\Wildberries\Products\UseCase\Barcode\NewEdit\WbBarcodeHandler;
 use Doctrine\ORM\EntityManagerInterface;
+use PHPUnit\Framework\Attributes\Group;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\DependencyInjection\Attribute\When;
 use Symfony\Component\HttpFoundation\Request;
 
-/**
- * @group products-stocks-telegram
- * @group products-stocks-telegram-move
- */
 #[When(env: 'test')]
+#[Group('products-stocks-telegram')]
 final class TelegramProcessMoveTest extends KernelTestCase
 {
     private static ?string $chat = null;
