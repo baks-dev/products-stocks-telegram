@@ -102,7 +102,7 @@ final class TelegramMoveProfile
             {
                 $menu[] = [
                     'text' => $profile['user_profile_username'],
-                    'callback_data' => TelegramMoveProcess::KEY.'|'.$profile['user_profile_id']
+                    'callback_data' => TelegramMoveProcess::KEY.'|'.$profile['user_profile_id'],
                 ];
             }
         }
@@ -111,16 +111,20 @@ final class TelegramMoveProfile
          * Получаем профили доверенностей
          */
 
-        $UserProfileUid = $this->activeProfileByAccountTelegram->findByChat($TelegramRequest->getChatId());
-        $profiles = $this->menuAuthorityRepository->findAll($UserProfileUid);
+        $UserProfileUid = $this->activeProfileByAccountTelegram
+            ->findByChat($TelegramRequest->getChatId());
+
+        $profiles = $this->menuAuthorityRepository
+            ->onProfile($UserProfileUid)
+            ->findAllResults();
 
         foreach($profiles as $profile)
         {
-            if($this->telegramSecurity->isGranted($UserProfileUid, 'ROLE_PRODUCT_STOCK_WAREHOUSE_SEND', $profile['authority']))
+            if($this->telegramSecurity->isGranted($UserProfileUid, 'ROLE_PRODUCT_STOCK_WAREHOUSE_SEND', $profile->getAuthority()))
             {
                 $menu[] = [
-                    'text' => $profile['authority_username'],
-                    'callback_data' => TelegramMoveProcess::KEY.'|'.$profile['authority']
+                    'text' => $profile->getAuthorityUsername(),
+                    'callback_data' => TelegramMoveProcess::KEY.'|'.$profile->getAuthority(),
                 ];
             }
         }
@@ -131,7 +135,7 @@ final class TelegramMoveProfile
         {
             $markup = json_encode([
                 'inline_keyboard' => array_chunk($menu, 1),
-            ]);
+            ], JSON_THROW_ON_ERROR);
         }
 
 

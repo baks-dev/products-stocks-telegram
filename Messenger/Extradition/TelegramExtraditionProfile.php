@@ -103,7 +103,7 @@ final class TelegramExtraditionProfile
             {
                 $menu[] = [
                     'text' => $profile['user_profile_username'],
-                    'callback_data' => TelegramExtraditionProcess::KEY.'|'.$profile['user_profile_id']
+                    'callback_data' => TelegramExtraditionProcess::KEY.'|'.$profile['user_profile_id'],
                 ];
             }
         }
@@ -114,23 +114,30 @@ final class TelegramExtraditionProfile
          */
 
         $UserProfileUid = $this->activeProfileByAccountTelegram->findByChat($TelegramRequest->getChatId());
-        $profiles = $this->menuAuthorityRepository->findAll($UserProfileUid);
+
+        $profiles = $this->menuAuthorityRepository
+            ->onProfile($UserProfileUid)
+            ->findAllResults();
+
+        if(false === $profiles || false === $profiles->valid())
+        {
+            return;
+        }
 
         foreach($profiles as $profile)
         {
-            if($this->TelegramSecurity->isGranted($UserProfileUid, 'ROLE_PRODUCT_STOCK_PACKAGE', $profile['authority']))
+            if($this->TelegramSecurity->isGranted($UserProfileUid, 'ROLE_PRODUCT_STOCK_PACKAGE', $profile->getAuthority()))
             {
                 $menu[] = [
-                    'text' => $profile['authority_username'],
-                    'callback_data' => TelegramExtraditionProcess::KEY.'|'.$profile['authority']
+                    'text' => $profile->getAuthorityUsername(),
+                    'callback_data' => TelegramExtraditionProcess::KEY.'|'.$profile->getAuthority(),
                 ];
             }
         }
 
-
         $markup = null;
 
-        if(!empty($menu))
+        if(false === empty($menu))
         {
             $markup = json_encode([
                 'inline_keyboard' => array_chunk($menu, 1),
