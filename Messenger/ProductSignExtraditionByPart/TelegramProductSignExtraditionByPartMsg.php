@@ -27,13 +27,6 @@ namespace BaksDev\Products\Stocks\Telegram\Messenger\ProductSignExtraditionByPar
 
 use BaksDev\Auth\Telegram\Repository\ActiveProfileByAccountTelegram\ActiveProfileByAccountTelegramInterface;
 use BaksDev\Core\Twig\CallTwigFuncExtension;
-use BaksDev\Manufacture\Part\Entity\Invariable\ManufacturePartInvariable;
-use BaksDev\Manufacture\Part\Entity\ManufacturePart;
-use BaksDev\Manufacture\Part\Repository\ActiveWorkingManufacturePart\ActiveWorkingManufacturePartInterface;
-use BaksDev\Manufacture\Part\Repository\AllWorkingByManufacturePart\AllWorkingByManufacturePartInterface;
-use BaksDev\Manufacture\Part\Repository\ProductsByManufacturePart\ProductsByManufacturePartInterface;
-use BaksDev\Manufacture\Part\Repository\ProductsByManufacturePart\ProductsByManufacturePartResult;
-use BaksDev\Manufacture\Part\Type\Id\ManufacturePartUid;
 use BaksDev\Products\Stocks\Repository\AllProductStocksPart\AllProductStocksPart\AllProductStocksOrdersPartInterface;
 use BaksDev\Products\Stocks\Security\VoterPart;
 use BaksDev\Products\Stocks\Type\Part\ProductStockPartUid;
@@ -42,13 +35,8 @@ use BaksDev\Telegram\Bot\Messenger\TelegramEndpointMessage\TelegramEndpointMessa
 use BaksDev\Telegram\Request\Type\TelegramRequestIdentifier;
 use BaksDev\Users\Profile\Group\Repository\ExistRoleByProfile\ExistRoleByProfileInterface;
 use BaksDev\Users\Profile\UserProfile\Type\Id\UserProfileUid;
-use Doctrine\ORM\EntityManagerInterface;
-use Psr\Log\LoggerInterface;
 use Symfony\Bundle\SecurityBundle\Security;
-use Symfony\Component\DependencyInjection\Attribute\AutowireIterator;
-use Symfony\Component\DependencyInjection\Attribute\Target;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
-use Symfony\Contracts\Translation\TranslatorInterface;
 use Twig\Environment;
 
 #[AsMessageHandler]

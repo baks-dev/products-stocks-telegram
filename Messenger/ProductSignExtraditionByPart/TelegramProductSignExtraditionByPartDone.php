@@ -29,13 +29,6 @@ use BaksDev\Auth\Telegram\Repository\ActiveProfileByAccountTelegram\ActiveProfil
 use BaksDev\Auth\Telegram\Repository\ActiveUserTelegramAccount\ActiveUserTelegramAccountInterface;
 use BaksDev\Core\Messenger\MessageDispatchInterface;
 use BaksDev\Core\Twig\CallTwigFuncExtension;
-use BaksDev\Manufacture\Part\Entity\Invariable\ManufacturePartInvariable;
-use BaksDev\Manufacture\Part\Entity\ManufacturePart;
-use BaksDev\Manufacture\Part\Repository\ActiveWorkingManufacturePart\ActiveWorkingManufacturePartInterface;
-use BaksDev\Manufacture\Part\Repository\AllWorkingByManufacturePart\AllWorkingByManufacturePartInterface;
-use BaksDev\Manufacture\Part\Repository\ProductsByManufacturePart\ProductsByManufacturePartInterface;
-use BaksDev\Manufacture\Part\Repository\ProductsByManufacturePart\ProductsByManufacturePartResult;
-use BaksDev\Manufacture\Part\Type\Id\ManufacturePartUid;
 use BaksDev\Products\Stocks\Messenger\Stocks\MultiplyProductStocksExtradition\MultiplyProductStocksExtraditionMessage;
 use BaksDev\Products\Stocks\Repository\AllProductStocksPart\AllProductStocksPart\AllProductStocksOrdersPartInterface;
 use BaksDev\Products\Stocks\Security\VoterPart;
@@ -44,19 +37,14 @@ use BaksDev\Products\Stocks\Type\Part\ProductStockPartUid;
 use BaksDev\Telegram\Api\TelegramSendMessages;
 use BaksDev\Telegram\Bot\Messenger\TelegramEndpointMessage\TelegramEndpointMessage;
 use BaksDev\Telegram\Request\Type\TelegramRequestCallback;
-use BaksDev\Telegram\Request\Type\TelegramRequestIdentifier;
 use BaksDev\Users\Profile\Group\Repository\ExistRoleByProfile\ExistRoleByProfileInterface;
 use BaksDev\Users\Profile\UserProfile\Type\Id\UserProfileUid;
-use BaksDev\Users\User\Repository\UserTokenStorage\UserTokenStorageInterface;
 use BaksDev\Users\User\Type\Id\UserUid;
 use DateTimeImmutable;
-use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Bundle\SecurityBundle\Security;
-use Symfony\Component\DependencyInjection\Attribute\AutowireIterator;
 use Symfony\Component\DependencyInjection\Attribute\Target;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
-use Symfony\Contracts\Translation\TranslatorInterface;
 use Twig\Environment;
 
 #[AsMessageHandler]
@@ -65,18 +53,12 @@ final readonly class TelegramProductSignExtraditionByPartDone
     public const string KEY = 'mzRTvhYwG';
 
     public function __construct(
-        #[Target('manufacturePartTelegramLogger')] private LoggerInterface $logger,
+        #[Target('productsStocksTelegramLogger')] private LoggerInterface $logger,
         private ActiveProfileByAccountTelegramInterface $activeProfileByAccountTelegram,
-        private ActiveWorkingManufacturePartInterface $activeWorkingManufacturePart,
         private TelegramSendMessages $telegramSendMessage,
-        private ManufacturePartActionHandler $ManufacturePartActionHandler,
         private Security $security,
-        private ManufacturePartCurrentEventInterface $ManufacturePartCurrentEvent,
-        private ExistManufacturePartInterface $ExistManufacturePart,
-
         private AllProductStocksOrdersPartInterface $AllProductStocksOrdersPartRepository,
         private ExistRoleByProfileInterface $ExistRoleByProfileRepository,
-        private UserTokenStorageInterface $UserTokenStorage,
         private ActiveUserTelegramAccountInterface $ActiveUserTelegramAccount,
         private MessageDispatchInterface $MessageDispatch,
         private Environment $environment,
