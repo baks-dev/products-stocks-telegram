@@ -35,7 +35,9 @@ use BaksDev\Telegram\Bot\Messenger\TelegramEndpointMessage\TelegramEndpointMessa
 use BaksDev\Telegram\Request\Type\TelegramRequestIdentifier;
 use BaksDev\Users\Profile\Group\Repository\ExistRoleByProfile\ExistRoleByProfileInterface;
 use BaksDev\Users\Profile\UserProfile\Type\Id\UserProfileUid;
+use Psr\Log\LoggerInterface;
 use Symfony\Bundle\SecurityBundle\Security;
+use Symfony\Component\DependencyInjection\Attribute\Target;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 use Twig\Environment;
 
@@ -45,6 +47,7 @@ final readonly class TelegramProductSignExtraditionByPartMsg
     public const string KEY = 'uxkhqnCjEY';
 
     public function __construct(
+        #[Target('productsStocksTelegramLogger')] private LoggerInterface $logger,
         private ActiveProfileByAccountTelegramInterface $activeProfileByAccountTelegram,
         private TelegramSendMessages $telegramSendMessage,
         private Security $security,
@@ -97,6 +100,12 @@ final readonly class TelegramProductSignExtraditionByPartMsg
 
         if(false === $isGranted)
         {
+            $this->logger->warning('Пользователь не имеет достаточно прав для выполнения действий', [
+                __FILE__.''.__LINE__,
+                'role' => VoterPart::getVoter(),
+                'chat' => $TelegramRequest->getChatId(),
+            ]);
+
             return;
         }
 
@@ -116,13 +125,17 @@ final readonly class TelegramProductSignExtraditionByPartMsg
 
         if(false === $result || false === $result->valid())
         {
+            $this->logger->warning(sprintf('%s: Упаковка с идентификатором в статусе «Package» не найдена', $ProductStockPartUid), [
+                __FILE__.''.__LINE__,
+                'chat' => $TelegramRequest->getChatId(),
+            ]);
+
             return;
         }
 
 
         $caption = '<b>Сборка продукции:</b>';
-        $caption .= "\n";
-        $caption .= "\n";
+        $caption .= PHP_EOL;
 
         /** Перечисляем продукцию в упаковке и её заказы */
 

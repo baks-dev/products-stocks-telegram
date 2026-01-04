@@ -86,9 +86,7 @@ final class TelegramMenuMoveTest extends KernelTestCase
         //            'ROLE_PRODUCT_STOCK_WAREHOUSE_SEND',
         //            '018d36b7-0d03-71a8-b1b0-e57b5c186ef9',
         //        );
-        //
-        //
-        //        dd($isGrantedProfile);
+
 
 
         // ФВДМИН

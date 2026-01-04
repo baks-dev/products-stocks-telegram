@@ -108,6 +108,12 @@ final readonly class TelegramProductSignExtraditionByPartDone
 
         if(false === $isGranted)
         {
+            $this->logger->warning('Пользователь не имеет достаточно прав для выполнения действий', [
+                __FILE__.''.__LINE__,
+                'role' => VoterPart::getVoter(),
+                'chat' => $TelegramRequest->getChatId(),
+            ]);
+
             return;
         }
 
@@ -141,8 +147,10 @@ final readonly class TelegramProductSignExtraditionByPartDone
 
         if(false === ($UserUid instanceof UserUid))
         {
-            $this->logger->warning('Идентификатор авторизованного пользователя не найден');
-            $this->logger->warning('Проверьте, заполнен ли пользователем профиль');
+            $this->logger->warning('Идентификатор авторизованного пользователя не найден', [
+                __FILE__.''.__LINE__,
+                'chat' => $TelegramRequest->getChatId(),
+            ]);
 
             return;
         }
@@ -154,8 +162,8 @@ final readonly class TelegramProductSignExtraditionByPartDone
 
         $call = $this->environment->getExtension(CallTwigFuncExtension::class);
 
-        $caption = '<b>Выполнено сборочное задание:</b>';
-        $caption .= sprintf('Дата: <b>%s</b>', new DateTimeImmutable()->format('d.m.Y H:i')); // Дата выполненного этапа
+        $caption = '<b>Выполнено сборочное задание: </b>';
+        $caption .= sprintf('<b>%s</b>', new DateTimeImmutable()->format('d.m.Y H:i')); // Дата выполненного этапа
         $caption .= PHP_EOL;
         $caption .= PHP_EOL;
 
