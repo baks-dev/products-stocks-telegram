@@ -39,6 +39,7 @@ use BaksDev\Telegram\Bot\Messenger\TelegramEndpointMessage\TelegramEndpointMessa
 use BaksDev\Telegram\Request\Type\TelegramRequestCallback;
 use BaksDev\Users\Profile\Group\Repository\ExistRoleByProfile\ExistRoleByProfileInterface;
 use BaksDev\Users\Profile\UserProfile\Type\Id\UserProfileUid;
+use BaksDev\Users\User\Repository\UserTokenStorage\UserTokenStorageInterface;
 use BaksDev\Users\User\Type\Id\UserUid;
 use DateTimeImmutable;
 use Psr\Log\LoggerInterface;
@@ -61,6 +62,7 @@ final readonly class TelegramProductSignExtraditionByPartDone
         private ExistRoleByProfileInterface $ExistRoleByProfileRepository,
         private ActiveUserTelegramAccountInterface $ActiveUserTelegramAccount,
         private MessageDispatchInterface $MessageDispatch,
+        private UserTokenStorageInterface $UserTokenStorage,
         private Environment $environment,
     ) {}
 
@@ -154,6 +156,8 @@ final readonly class TelegramProductSignExtraditionByPartDone
 
             return;
         }
+
+        $this->UserTokenStorage->authorization($UserUid);
 
 
         /**
