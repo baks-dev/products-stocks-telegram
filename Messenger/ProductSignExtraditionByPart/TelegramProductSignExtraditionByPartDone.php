@@ -94,7 +94,7 @@ final readonly class TelegramProductSignExtraditionByPartDone
         if(false === ($UserProfileUid instanceof UserProfileUid))
         {
             $this->logger->warning('Активный профиль пользователя не найден', [
-                __FILE__.''.__LINE__,
+                self::class.':'.__LINE__,
                 'chat' => $TelegramRequest->getChatId(),
             ]);
 
@@ -111,7 +111,7 @@ final readonly class TelegramProductSignExtraditionByPartDone
         if(false === $isGranted)
         {
             $this->logger->warning('Пользователь не имеет достаточно прав для выполнения действий', [
-                __FILE__.''.__LINE__,
+                self::class.':'.__LINE__,
                 'role' => VoterPart::getVoter(),
                 'chat' => $TelegramRequest->getChatId(),
             ]);
@@ -150,7 +150,7 @@ final readonly class TelegramProductSignExtraditionByPartDone
         if(false === ($UserUid instanceof UserUid))
         {
             $this->logger->warning('Идентификатор авторизованного пользователя не найден', [
-                __FILE__.''.__LINE__,
+                self::class.':'.__LINE__,
                 'chat' => $TelegramRequest->getChatId(),
             ]);
 
