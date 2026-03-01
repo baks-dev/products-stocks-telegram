@@ -48,7 +48,7 @@ use Symfony\Component\DependencyInjection\Attribute\Target;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 use Twig\Environment;
 
-#[AsMessageHandler]
+#[AsMessageHandler(priority: 0)]
 final readonly class TelegramProductSignExtraditionByPartDone
 {
     public const string KEY = 'mzRTvhYwG';

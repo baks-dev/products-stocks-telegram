@@ -40,7 +40,7 @@ use Symfony\Component\DependencyInjection\Attribute\Target;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 
 
-#[AsMessageHandler]
+#[AsMessageHandler(priority: 0)]
 final class TelegramMoveQrcode
 {
     public const string KEY = 'JYnjKcTgP';

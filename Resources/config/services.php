@@ -23,7 +23,6 @@
 
 namespace Symfony\Component\DependencyInjection\Loader\Configurator;
 
-use BaksDev\Elastic\BaksDevElasticBundle;
 use BaksDev\Products\Stocks\Telegram\BaksDevProductsStocksTelegramBundle;
 
 return static function (ContainerConfigurator $configurator) {
@@ -31,7 +30,8 @@ return static function (ContainerConfigurator $configurator) {
     $services = $configurator->services()
         ->defaults()
         ->autowire()
-        ->autoconfigure();
+        ->autoconfigure()
+        ->public();
 
     $NAMESPACE = BaksDevProductsStocksTelegramBundle::NAMESPACE;
     $PATH = BaksDevProductsStocksTelegramBundle::PATH;
@@ -40,6 +40,7 @@ return static function (ContainerConfigurator $configurator) {
         ->exclude([
             $PATH.'{Entity,Resources,Type}',
             $PATH.'**'.DIRECTORY_SEPARATOR.'*Message.php',
+            $PATH.'**'.DIRECTORY_SEPARATOR.'*Result.php',
             $PATH.'**'.DIRECTORY_SEPARATOR.'*DTO.php',
             $PATH.'**'.DIRECTORY_SEPARATOR.'*Test.php',
         ]);

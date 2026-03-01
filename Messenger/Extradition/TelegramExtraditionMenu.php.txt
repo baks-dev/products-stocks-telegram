@@ -38,7 +38,7 @@ use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 /**
  * Отправляет сообщение выбора начала упаковки заказов
  */
-#[AsMessageHandler]
+#[AsMessageHandler(priority: 0)]
 final class TelegramExtraditionMenu
 {
 

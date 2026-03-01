@@ -34,7 +34,7 @@ use BaksDev\Telegram\Request\Type\TelegramRequestMessage;
 use DateTimeImmutable;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 
-#[AsMessageHandler]
+#[AsMessageHandler(priority: 0)]
 final class TelegramMoveMenu
 {
     private TelegramSendMessages $telegramSendMessage;
