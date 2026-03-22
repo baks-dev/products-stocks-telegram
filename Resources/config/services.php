@@ -25,7 +25,7 @@ namespace Symfony\Component\DependencyInjection\Loader\Configurator;
 
 use BaksDev\Products\Stocks\Telegram\BaksDevProductsStocksTelegramBundle;
 
-return static function (ContainerConfigurator $configurator) {
+return static function(ContainerConfigurator $configurator) {
 
     $services = $configurator->services()
         ->defaults()

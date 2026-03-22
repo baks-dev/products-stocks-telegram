@@ -91,10 +91,10 @@ final class ProductStockFixedRepository implements ProductStockFixedInterface
             ->setParameter('event', $event, ProductStockEventUid::TYPE);
 
 
-//
-//        $dbal
-//            ->andWhere('fixed = :profile')
-//            ->setParameter('profile', $profile, UserProfileUid::TYPE);
+        //
+        //        $dbal
+        //            ->andWhere('fixed = :profile')
+        //            ->setParameter('profile', $profile, UserProfileUid::TYPE);
 
         return $dbal->executeStatement();
     }
@@ -120,7 +120,7 @@ final class ProductStockFixedRepository implements ProductStockFixedInterface
                 'event',
                 UserProfile::class,
                 'profile',
-                'profile.id = event.fixed'
+                'profile.id = event.fixed',
             );
 
         $dbal
@@ -129,7 +129,7 @@ final class ProductStockFixedRepository implements ProductStockFixedInterface
                 'profile',
                 UserProfilePersonal::class,
                 'profile_personal',
-                'profile_personal.event = profile.event'
+                'profile_personal.event = profile.event',
             );
 
         return $dbal->enableCache('products-stocks-telegram', 60)->fetchAssociative();

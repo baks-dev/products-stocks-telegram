@@ -25,7 +25,6 @@ declare(strict_types=1);
 
 namespace BaksDev\Products\Stocks\Telegram;
 
-use DirectoryIterator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigurator;
 use Symfony\Component\HttpKernel\Bundle\AbstractBundle;

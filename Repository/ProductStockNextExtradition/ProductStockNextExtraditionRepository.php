@@ -101,7 +101,7 @@ final class ProductStockNextExtraditionRepository implements ProductStockNextExt
                 event.status = :package OR 
                 event.status = :move 
                 
-            )'
+            )',
         );
 
         $dbal->setParameter('package', new ProductStockStatus(ProductStockStatusPackage::class), ProductStockStatus::TYPE);
@@ -114,7 +114,7 @@ final class ProductStockNextExtraditionRepository implements ProductStockNextExt
             'main',
             ProductStockModify::class,
             'modify',
-            'modify.event = main.event'
+            'modify.event = main.event',
         );
 
 
@@ -125,7 +125,7 @@ final class ProductStockNextExtraditionRepository implements ProductStockNextExt
             'event',
             UserProfile::class,
             'users_profile',
-            'users_profile.id = event.profile'
+            'users_profile.id = event.profile',
         );
 
         $dbal
@@ -134,7 +134,7 @@ final class ProductStockNextExtraditionRepository implements ProductStockNextExt
                 'users_profile',
                 UserProfilePersonal::class,
                 'users_profile_personal',
-                'users_profile_personal.event = users_profile.event'
+                'users_profile_personal.event = users_profile.event',
             );
 
 
@@ -142,7 +142,7 @@ final class ProductStockNextExtraditionRepository implements ProductStockNextExt
             'main',
             ProductStockOrder::class,
             'ord',
-            'ord.event = main.event'
+            'ord.event = main.event',
         );
 
 
@@ -150,14 +150,14 @@ final class ProductStockNextExtraditionRepository implements ProductStockNextExt
             'ord',
             Order::class,
             'orders',
-            'orders.id = ord.ord'
+            'orders.id = ord.ord',
         );
 
         $dbal->leftJoin(
             'orders',
             OrderUser::class,
             'order_user',
-            'order_user.event = orders.event'
+            'order_user.event = orders.event',
         );
 
 
@@ -165,14 +165,14 @@ final class ProductStockNextExtraditionRepository implements ProductStockNextExt
             'order_user',
             OrderDelivery::class,
             'order_delivery',
-            'order_delivery.usr = order_user.id'
+            'order_delivery.usr = order_user.id',
         );
 
         $dbal->leftJoin(
             'order_delivery',
             DeliveryEvent::class,
             'delivery_event',
-            'delivery_event.id = order_delivery.event AND delivery_event.main = order_delivery.delivery'
+            'delivery_event.id = order_delivery.event AND delivery_event.main = order_delivery.delivery',
         );
 
 
@@ -182,7 +182,7 @@ final class ProductStockNextExtraditionRepository implements ProductStockNextExt
                 'delivery_event',
                 DeliveryTrans::class,
                 'delivery_trans',
-                'delivery_trans.event = delivery_event.id AND delivery_trans.local = :local'
+                'delivery_trans.event = delivery_event.id AND delivery_trans.local = :local',
             );
 
 
@@ -225,7 +225,7 @@ final class ProductStockNextExtraditionRepository implements ProductStockNextExt
                 'stock_product',
                 Product::class,
                 'product',
-                'product.id = stock_product.product'
+                'product.id = stock_product.product',
             );
 
         // Product Event
@@ -233,7 +233,7 @@ final class ProductStockNextExtraditionRepository implements ProductStockNextExt
             'product',
             ProductEvent::class,
             'product_event',
-            'product_event.id = product.event'
+            'product_event.id = product.event',
         );
 
         $dbal
@@ -242,7 +242,7 @@ final class ProductStockNextExtraditionRepository implements ProductStockNextExt
                 'product_event',
                 ProductTrans::class,
                 'product_trans',
-                'product_trans.event = product_event.id AND product_trans.local = :local'
+                'product_trans.event = product_event.id AND product_trans.local = :local',
             );
 
 
@@ -257,7 +257,7 @@ final class ProductStockNextExtraditionRepository implements ProductStockNextExt
                 'product_event',
                 ProductOffer::class,
                 'product_offer',
-                'product_offer.event = product_event.id AND product_offer.const = stock_product.offer'
+                'product_offer.event = product_event.id AND product_offer.const = stock_product.offer',
             );
 
         // Получаем тип торгового предложения
@@ -266,7 +266,7 @@ final class ProductStockNextExtraditionRepository implements ProductStockNextExt
                 'product_offer',
                 CategoryProductOffers::class,
                 'category_offer',
-                'category_offer.id = product_offer.category_offer'
+                'category_offer.id = product_offer.category_offer',
             );
 
         $dbal
@@ -275,7 +275,7 @@ final class ProductStockNextExtraditionRepository implements ProductStockNextExt
                 'category_offer',
                 CategoryProductOffersTrans::class,
                 'category_offer_trans',
-                'category_offer_trans.offer = category_offer.id AND category_offer_trans.local = :local'
+                'category_offer_trans.offer = category_offer.id AND category_offer_trans.local = :local',
             );
 
 
@@ -290,7 +290,7 @@ final class ProductStockNextExtraditionRepository implements ProductStockNextExt
                 'product_offer',
                 ProductVariation::class,
                 'product_offer_variation',
-                'product_offer_variation.offer = product_offer.id AND product_offer_variation.const = stock_product.variation'
+                'product_offer_variation.offer = product_offer.id AND product_offer_variation.const = stock_product.variation',
             );
 
         // Получаем тип множественного варианта
@@ -299,7 +299,7 @@ final class ProductStockNextExtraditionRepository implements ProductStockNextExt
                 'product_offer_variation',
                 CategoryProductVariation::class,
                 'category_offer_variation',
-                'category_offer_variation.id = product_offer_variation.category_variation'
+                'category_offer_variation.id = product_offer_variation.category_variation',
             );
 
         $dbal
@@ -308,7 +308,7 @@ final class ProductStockNextExtraditionRepository implements ProductStockNextExt
                 'category_offer_variation',
                 CategoryProductVariationTrans::class,
                 'category_offer_variation_trans',
-                'category_offer_variation_trans.variation = category_offer_variation.id AND category_offer_variation_trans.local = :local'
+                'category_offer_variation_trans.variation = category_offer_variation.id AND category_offer_variation_trans.local = :local',
             );
 
 
@@ -323,7 +323,7 @@ final class ProductStockNextExtraditionRepository implements ProductStockNextExt
                 'product_offer_variation',
                 ProductModification::class,
                 'product_offer_modification',
-                'product_offer_modification.variation = product_offer_variation.id AND product_offer_modification.const = stock_product.modification'
+                'product_offer_modification.variation = product_offer_variation.id AND product_offer_modification.const = stock_product.modification',
             );
 
         // Получаем тип модификации множественного варианта
@@ -332,7 +332,7 @@ final class ProductStockNextExtraditionRepository implements ProductStockNextExt
                 'product_offer_modification',
                 CategoryProductModification::class,
                 'category_offer_modification',
-                'category_offer_modification.id = product_offer_modification.category_modification'
+                'category_offer_modification.id = product_offer_modification.category_modification',
             );
 
         $dbal
@@ -341,7 +341,7 @@ final class ProductStockNextExtraditionRepository implements ProductStockNextExt
                 'category_offer_modification',
                 CategoryProductModificationTrans::class,
                 'category_offer_modification_trans',
-                'category_offer_modification_trans.modification = category_offer_modification.id AND category_offer_modification_trans.local = :local'
+                'category_offer_modification_trans.modification = category_offer_modification.id AND category_offer_modification_trans.local = :local',
             );
 
 

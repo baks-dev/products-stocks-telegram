@@ -117,7 +117,7 @@ final class ProductStockMoveCurrentRepository implements ProductStockMoveCurrent
             'main',
             ProductStockModify::class,
             'modify',
-            'modify.event = main.event'
+            'modify.event = main.event',
         );
 
 
@@ -127,7 +127,7 @@ final class ProductStockMoveCurrentRepository implements ProductStockMoveCurrent
             'event',
             UserProfile::class,
             'users_profile',
-            'users_profile.id = event.profile'
+            'users_profile.id = event.profile',
         );
 
         $dbal
@@ -136,7 +136,7 @@ final class ProductStockMoveCurrentRepository implements ProductStockMoveCurrent
                 'users_profile',
                 UserProfilePersonal::class,
                 'users_profile_personal',
-                'users_profile_personal.event = users_profile.event'
+                'users_profile_personal.event = users_profile.event',
             );
 
 
@@ -148,14 +148,14 @@ final class ProductStockMoveCurrentRepository implements ProductStockMoveCurrent
             'event',
             ProductStockMove::class,
             'move',
-            'move.event = event.id AND move.ord IS NULL'
+            'move.event = event.id AND move.ord IS NULL',
         );
 
         $dbal->join(
             'move',
             UserProfile::class,
             'users_profile_destination',
-            'users_profile_destination.id = move.destination'
+            'users_profile_destination.id = move.destination',
         );
 
 
@@ -166,7 +166,7 @@ final class ProductStockMoveCurrentRepository implements ProductStockMoveCurrent
                 'users_profile_destination',
                 UserProfilePersonal::class,
                 'users_profile_personal_destination',
-                'users_profile_personal_destination.event = users_profile_destination.event'
+                'users_profile_personal_destination.event = users_profile_destination.event',
             );
 
 
@@ -174,7 +174,7 @@ final class ProductStockMoveCurrentRepository implements ProductStockMoveCurrent
             'main',
             ProductStockOrder::class,
             'ord',
-            'ord.event = main.event'
+            'ord.event = main.event',
         );
 
         $dbal->andWhere('ord.ord IS NULL');
@@ -216,7 +216,7 @@ final class ProductStockMoveCurrentRepository implements ProductStockMoveCurrent
                 'stock_product',
                 Product::class,
                 'product',
-                'product.id = stock_product.product'
+                'product.id = stock_product.product',
             );
 
         // Product Event
@@ -224,7 +224,7 @@ final class ProductStockMoveCurrentRepository implements ProductStockMoveCurrent
             'product',
             ProductEvent::class,
             'product_event',
-            'product_event.id = product.event'
+            'product_event.id = product.event',
         );
 
         $dbal
@@ -233,7 +233,7 @@ final class ProductStockMoveCurrentRepository implements ProductStockMoveCurrent
                 'product_event',
                 ProductTrans::class,
                 'product_trans',
-                'product_trans.event = product_event.id AND product_trans.local = :local'
+                'product_trans.event = product_event.id AND product_trans.local = :local',
             );
 
 
@@ -248,7 +248,7 @@ final class ProductStockMoveCurrentRepository implements ProductStockMoveCurrent
                 'product_event',
                 ProductOffer::class,
                 'product_offer',
-                'product_offer.event = product_event.id AND product_offer.const = stock_product.offer'
+                'product_offer.event = product_event.id AND product_offer.const = stock_product.offer',
             );
 
         // Получаем тип торгового предложения
@@ -257,7 +257,7 @@ final class ProductStockMoveCurrentRepository implements ProductStockMoveCurrent
                 'product_offer',
                 CategoryProductOffers::class,
                 'category_offer',
-                'category_offer.id = product_offer.category_offer'
+                'category_offer.id = product_offer.category_offer',
             );
 
         $dbal
@@ -266,7 +266,7 @@ final class ProductStockMoveCurrentRepository implements ProductStockMoveCurrent
                 'category_offer',
                 CategoryProductOffersTrans::class,
                 'category_offer_trans',
-                'category_offer_trans.offer = category_offer.id AND category_offer_trans.local = :local'
+                'category_offer_trans.offer = category_offer.id AND category_offer_trans.local = :local',
             );
 
 
@@ -281,7 +281,7 @@ final class ProductStockMoveCurrentRepository implements ProductStockMoveCurrent
                 'product_offer',
                 ProductVariation::class,
                 'product_offer_variation',
-                'product_offer_variation.offer = product_offer.id AND product_offer_variation.const = stock_product.variation'
+                'product_offer_variation.offer = product_offer.id AND product_offer_variation.const = stock_product.variation',
             );
 
         // Получаем тип множественного варианта
@@ -290,7 +290,7 @@ final class ProductStockMoveCurrentRepository implements ProductStockMoveCurrent
                 'product_offer_variation',
                 CategoryProductVariation::class,
                 'category_offer_variation',
-                'category_offer_variation.id = product_offer_variation.category_variation'
+                'category_offer_variation.id = product_offer_variation.category_variation',
             );
 
         $dbal
@@ -299,7 +299,7 @@ final class ProductStockMoveCurrentRepository implements ProductStockMoveCurrent
                 'category_offer_variation',
                 CategoryProductVariationTrans::class,
                 'category_offer_variation_trans',
-                'category_offer_variation_trans.variation = category_offer_variation.id AND category_offer_variation_trans.local = :local'
+                'category_offer_variation_trans.variation = category_offer_variation.id AND category_offer_variation_trans.local = :local',
             );
 
 
@@ -314,7 +314,7 @@ final class ProductStockMoveCurrentRepository implements ProductStockMoveCurrent
                 'product_offer_variation',
                 ProductModification::class,
                 'product_offer_modification',
-                'product_offer_modification.variation = product_offer_variation.id AND product_offer_modification.const = stock_product.modification'
+                'product_offer_modification.variation = product_offer_variation.id AND product_offer_modification.const = stock_product.modification',
             );
 
         // Получаем тип модификации множественного варианта
@@ -323,7 +323,7 @@ final class ProductStockMoveCurrentRepository implements ProductStockMoveCurrent
                 'product_offer_modification',
                 CategoryProductModification::class,
                 'category_offer_modification',
-                'category_offer_modification.id = product_offer_modification.category_modification'
+                'category_offer_modification.id = product_offer_modification.category_modification',
             );
 
         $dbal
@@ -332,7 +332,7 @@ final class ProductStockMoveCurrentRepository implements ProductStockMoveCurrent
                 'category_offer_modification',
                 CategoryProductModificationTrans::class,
                 'category_offer_modification_trans',
-                'category_offer_modification_trans.modification = category_offer_modification.id AND category_offer_modification_trans.local = :local'
+                'category_offer_modification_trans.modification = category_offer_modification.id AND category_offer_modification_trans.local = :local',
             );
 
 
@@ -369,8 +369,7 @@ final class ProductStockMoveCurrentRepository implements ProductStockMoveCurrent
                 (total.modification IS NULL OR total.modification = stock_product.modification) AND
                 total.total > 0
             ')
-            ->setParameter('profile', $this->profile, UserProfileUid::TYPE)
-        ;
+            ->setParameter('profile', $this->profile, UserProfileUid::TYPE);
 
 
         $dbal->allGroupByExclude();
